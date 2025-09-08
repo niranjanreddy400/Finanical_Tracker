@@ -290,6 +290,11 @@
         let currentCredits = [];
         let currentDebts = [];
 
+        // Your Render.com backend URL goes here
+        const backendUrl = 'YOUR_RENDER_BACKEND_URL_HERE';
+        const corsProxy = 'https://cors-anywhere.herokuapp.com/';
+
+
         // UI element references
         const views = {
             login: document.getElementById('loginView'),
@@ -547,20 +552,19 @@
             }
         };
 
-        // Zerodha API call simulation
+        // Zerodha API call
         const fetchZerodhaPortfolio = async () => {
             loadingOverlay.classList.remove('hidden');
             try {
-                // In a production environment, this would call your deployed Python backend
-                // For this demo, we use a placeholder response
-                const response = await new Promise(resolve => setTimeout(() => {
-                    resolve({
-                        data: [
-                            { symbol: "RELIANCE.NS", quantity: 50, buyPrice: 2800.0, currentPrice: 2950.25, datePurchased: "2024-03-10", source: "Zerodha" },
-                            { symbol: "TCS.NS", quantity: 25, buyPrice: 3800.0, currentPrice: 3850.50, datePurchased: "2024-04-15", source: "Zerodha" }
-                        ]
-                    });
-                }, 1500));
+                const response = await fetch(`${corsProxy}${backendUrl}/api/portfolio`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const result = await response.json();
+                
+                if (result.status === "error") {
+                    throw new Error(result.message);
+                }
                 
                 const batch = writeBatch(db);
                 const stocksColRef = collection(db, `/artifacts/${appId}/users/${userId}/stocks`);
@@ -568,9 +572,14 @@
                 const existingStocksSnapshot = await getDocs(query(stocksColRef, where("source", "==", "Zerodha")));
                 existingStocksSnapshot.forEach(doc => batch.delete(doc.ref));
 
-                response.data.forEach(stock => {
+                result.data.forEach(stock => {
                     batch.set(doc(stocksColRef), {
-                        ...stock,
+                        symbol: stock.symbol,
+                        quantity: stock.quantity,
+                        buyPrice: stock.buy_price,
+                        currentPrice: stock.current_price,
+                        datePurchased: stock.datePurchased,
+                        source: "Zerodha",
                         createdAt: serverTimestamp()
                     });
                 });
@@ -578,6 +587,8 @@
                 await batch.commit();
             } catch (e) {
                 console.error("Error fetching Zerodha data:", e);
+                alertModalContent.textContent = `Error fetching Zerodha data: ${e.message}. Please ensure your backend is deployed correctly and your API keys are set on Render.`;
+                alertModal.classList.remove('hidden');
             } finally {
                 loadingOverlay.classList.add('hidden');
             }
