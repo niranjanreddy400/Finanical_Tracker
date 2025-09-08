@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Finance Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827;
+            color: #d1d5db;
+        }
+        .card {
+            background-color: #1f2937;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 2rem;
+        }
+        .dashboard-metric {
+            border: 1px solid #374151;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+        .nav-button {
+            transition: all 0.2s;
+        }
+        .nav-button.active {
+            background-color: #4b5563;
+            color: white;
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: white;
+            animation: spin 1s ease infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="p-8">
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <p class="text-white text-lg">Processing request...</p>
+    </div>
+
+    <!-- Login View -->
+    <div id="loginView" class="flex flex-col items-center justify-center min-h-screen p-4">
+        <div class="card w-full max-w-md text-center">
+            <h1 class="text-3xl font-bold text-gray-200 mb-6">Financial Dashboard Login</h1>
+            <p class="text-gray-400 mb-6">Your data is stored securely and privately.</p>
+            <div class="space-y-4">
+                <button id="signInAnonBtn" class="w-full p-3 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors">
+                    Sign In to Continue
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="mainApp" class="max-w-7xl mx-auto hidden">
+        <div class="flex items-center justify-between mb-8">
+            <h1 class="text-3xl font-bold text-gray-200">Personal Financial Dashboard</h1>
+            <div id="userBadge" class="p-2 bg-gray-700 rounded-full text-sm text-gray-400">Loading...</div>
+        </div>
+        <hr class="border-gray-700 mb-8" />
+
+        <!-- Navigation Tabs -->
+        <div class="flex bg-gray-800 p-2 rounded-xl mb-8">
+            <button id="dashboardBtn" class="flex-1 p-3 font-semibold text-center rounded-lg nav-button active">Dashboard</button>
+            <button id="stocksBtn" class="flex-1 p-3 font-semibold text-center rounded-lg nav-button">Stocks</button>
+            <button id="creditsBtn" class="flex-1 p-3 font-semibold text-center rounded-lg nav-button">Credits</button>
+            <button id="debtsBtn" class="flex-1 p-3 font-semibold text-center rounded-lg nav-button">Debts</button>
+        </div>
+
+        <!-- Dashboard View -->
+        <div id="dashboardView" class="view grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 space-y-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div class="dashboard-metric">
+                        <p class="text-sm text-gray-400">Total Stocks</p>
+                        <p id="totalStocks" class="text-2xl font-bold text-green-400 mt-1">₹0</p>
+                    </div>
+                    <div class="dashboard-metric">
+                        <p class="text-sm text-gray-400">Total Credits</p>
+                        <p id="totalCredits" class="text-2xl font-bold text-blue-400 mt-1">₹0</p>
+                    </div>
+                    <div class="dashboard-metric">
+                        <p class="text-sm text-gray-400">Total Debts</p>
+                        <p id="totalDebts" class="text-2xl font-bold text-red-400 mt-1">₹0</p>
+                    </div>
+                    <div class="dashboard-metric">
+                        <p class="text-sm text-gray-400">Net Worth</p>
+                        <p id="netWorth" class="text-2xl font-bold text-gray-200 mt-1">₹0</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="card">
+                        <h2 class="text-lg font-semibold mb-4 text-gray-200">Credits vs Debts</h2>
+                        <canvas id="creditDebtChart"></canvas>
+                    </div>
+                    <div class="card">
+                        <h2 class="text-lg font-semibold mb-4 text-gray-200">Net Worth Breakdown</h2>
+                        <canvas id="netWorthChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="lg:col-span-1 space-y-8">
+                <div class="card">
+                    <h2 class="text-lg font-semibold mb-4 text-gray-200">AI Financial Agent</h2>
+                    <p class="text-sm text-gray-400 mb-4">Click below to get personalized insights and alerts on your financial health.</p>
+                    <button id="getAIAlertsBtn" class="w-full p-3 rounded-md bg-purple-600 text-white font-semibold hover:bg-purple-700 transition-colors">
+                        Get AI Insights
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stocks View -->
+        <div id="stocksView" class="view hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="card">
+                    <h2 class="text-lg font-semibold mb-4 text-gray-200">Add New Stock</h2>
+                    <form id="stockForm" class="space-y-4">
+                        <input type="text" id="stockSymbol" placeholder="Ticker Symbol (e.g., RELIANCE.NS)" required class="w-full p-3 rounded-md bg-gray-800 border border-gray-700 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="number" id="stockQuantity" placeholder="Quantity" required class="w-full p-3 rounded-md bg-gray-800 border border-gray-700 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="number" id="stockBuyPrice" step="0.01" placeholder="Average Buy Price (₹)" required class="w-full p-3 rounded-md bg-gray-800 border border-gray-700 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="date" id="stockDate" required class="w-full p-3 rounded-md bg-gray-800 border border-gray-700 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button type="submit" class="w-full p-3 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors">Add Stock</button>
+                    </form>
+                </div>
+                <div class="card">
+                    <h2 class="text-lg font-semibold mb-4 text-gray-200">Zerodha Portfolio</h2>
+                    <p class="text-sm text-gray-400 mb-4">Fetch your live holdings from your Zerodha account.</p>
+                    <button id="fetchZerodhaBtn" class="w-full p-3 rounded-md bg-green-600 text-white font-semibold hover:bg-green-700 transition-colors">
+                        Fetch from Zerodha
+                    </button>
+                </div>
+            </div>
+            <div class="card mt-8">
+                <h2 class="text-lg font-semibold mb-4 text-gray-200">My Stock Holdings</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="text-gray-400 text-sm border-b border-gray-700">
+                            <tr>
+                                <th class="p-3">Symbol</th>
+                                <th class="p-3">Quantity</th>
+                                <th class="p-3">Avg. Buy Price (₹)</th>
+                                <th class="p-3">Current Price (₹)</th>
+                                <th class="p-3">P/L (%)</th>
+                                <th class="p-3">Source</th>
+                                <th class="p-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stocksTableBody">
+                            <!-- Stocks will be rendered here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Credits View -->
+        <div id="creditsView" class="view hidden">
+            <div class="card mb-8">
+                <h2 class="text-lg font-semibold mb-4 text-gray-200">Add New Credit</h2>
+                <form id="creditForm" class="space-y-4">
+                    <input type="text" id="creditName" placeholder="Name of Person" required class="w-full p-3 rounded-md bg-gray-800 border border-gray-700 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="number" id="creditPrincipal" placeholder="Principal Amount (₹)" required class="w-full p-3 rounded-md bg-gray-800 border border-gray-700 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="date" id="creditDate" required class="w-full p-3 rounded-md bg-gray-800 border border-gray-700 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="number" id="creditInterestRate" placeholder="Annual Interest Rate (%)" value="8" required class="w-full p-3 rounded-md bg-gray-800 border border-gray-700 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="submit" class="w-full p-3 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors">Add Credit</button>
+                </form>
+            </div>
+            <div class="card">
+                <h2 class="text-lg font-semibold mb-4 text-gray-200">My Credits</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="text-gray-400 text-sm border-b border-gray-700">
+                            <tr>
+                                <th class="p-3">Name</th>
+                                <th class="p-3">Principal (₹)</th>
+                                <th class="p-3">Interest Earned (₹)</th>
+                                <th class="p-3">Status</th>
+                                <th class="p-3">Date Given</th>
+                                <th class="p-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="creditsTableBody">
+                            <!-- Credits will be rendered here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Debts View -->
+        <div id="debtsView" class="view hidden">
+            <div class="card mb-8">
+                <h2 class="text-lg font-semibold mb-4 text-gray-200">Add New Debt</h2>
+                <form id="debtForm" class="space-y-4">
+                    <input type="text" id="debtName" placeholder="Name of Person" required class="w-full p-3 rounded-md bg-gray-800 border border-gray-700 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="number" id="debtPrincipal" placeholder="Principal Amount (₹)" required class="w-full p-3 rounded-md bg-gray-800 border border-gray-700 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="date" id="debtDate" required class="w-full p-3 rounded-md bg-gray-800 border border-gray-700 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="number" id="debtInterestRate" placeholder="Annual Interest Rate (%)" value="10" required class="w-full p-3 rounded-md bg-gray-800 border border-gray-700 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="submit" class="w-full p-3 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors">Add Debt</button>
+                </form>
+            </div>
+            <div class="card">
+                <h2 class="text-lg font-semibold mb-4 text-gray-200">My Debts</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="text-gray-400 text-sm border-b border-gray-700">
+                            <tr>
+                                <th class="p-3">Name</th>
+                                <th class="p-3">Principal (₹)</th>
+                                <th class="p-3">Interest Paid (₹)</th>
+                                <th class="p-3">Status</th>
+                                <th class="p-3">Date Taken</th>
+                                <th class="p-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="debtsTableBody">
+                            <!-- Debts will be rendered here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- AI Alert Modal -->
+    <div id="alertModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity"></div>
+            <div class="card relative w-full max-w-lg mx-auto my-8">
+                <h3 class="text-2xl font-bold mb-4 text-gray-200">AI Financial Insights</h3>
+                <p id="alertModalContent" class="text-gray-400 whitespace-pre-wrap"></p>
+                <div class="mt-6 text-right">
+                    <button id="alertModalCloseBtn" class="p-3 rounded-md bg-gray-700 text-gray-200 font-semibold hover:bg-gray-600 transition-colors">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, collection, doc, addDoc, onSnapshot, updateDoc, deleteDoc, serverTimestamp, getDocs, query, where, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // Global variables for Firebase config, provided by the Canvas environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const authToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db;
+        let auth;
+        let userId = '';
+        let creditDebtChart;
+        let netWorthChart;
+
+        let currentStocks = [];
+        let currentCredits = [];
+        let currentDebts = [];
+
+        // UI element references
+        const views = {
+            login: document.getElementById('loginView'),
+            main: document.getElementById('mainApp'),
+            dashboard: document.getElementById('dashboardView'),
+            stocks: document.getElementById('stocksView'),
+            credits: document.getElementById('creditsView'),
+            debts: document.getElementById('debtsView'),
+        };
+        const navButtons = {
+            dashboard: document.getElementById('dashboardBtn'),
+            stocks: document.getElementById('stocksBtn'),
+            credits: document.getElementById('creditsBtn'),
+            debts: document.getElementById('debtsBtn'),
+        };
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const userBadge = document.getElementById('userBadge');
+        const stocksTableBody = document.getElementById('stocksTableBody');
+        const creditsTableBody = document.getElementById('creditsTableBody');
+        const debtsTableBody = document.getElementById('debtsTableBody');
+        const alertModal = document.getElementById('alertModal');
+        const alertModalContent = document.getElementById('alertModalContent');
+
+        // Initialize Firebase and auth
+        const initFirebase = async () => {
+            if (Object.keys(firebaseConfig).length === 0) {
+                console.error("Firebase config is not available. Please ensure the app is configured correctly.");
+                return;
+            }
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                
+                auth.onAuthStateChanged(user => {
+                    if (user) {
+                        userId = user.uid;
+                        userBadge.textContent = `UserID: ${userId.substring(0, 8)}...`;
+                        views.login.classList.add('hidden');
+                        views.main.classList.remove('hidden');
+                        setupRealtimeListeners();
+                        initCharts();
+                    } else {
+                        console.log("No user is signed in.");
+                        views.login.classList.remove('hidden');
+                        views.main.classList.add('hidden');
+                    }
+                });
+            } catch (e) {
+                console.error("Error initializing Firebase:", e);
+            }
+        };
+
+        const signInAnonymouslyUser = async () => {
+            try {
+                if (authToken) {
+                    await signInWithCustomToken(auth, authToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Error during anonymous sign-in:", error);
+            }
+        };
+        document.getElementById('signInAnonBtn').addEventListener('click', signInAnonymouslyUser);
+
+        // Setup real-time listeners for all data types
+        const setupRealtimeListeners = () => {
+            onSnapshot(collection(db, `/artifacts/${appId}/users/${userId}/stocks`), (snapshot) => {
+                currentStocks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderStocks();
+                updateDashboard();
+            });
+            onSnapshot(collection(db, `/artifacts/${appId}/users/${userId}/credits`), (snapshot) => {
+                currentCredits = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderCredits();
+                updateDashboard();
+            });
+            onSnapshot(collection(db, `/artifacts/${appId}/users/${userId}/debts`), (snapshot) => {
+                currentDebts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderDebts();
+                updateDashboard();
+            });
+        };
+
+        // UI Rendering Functions
+        const updateDashboard = () => {
+            const totalCredits = currentCredits.filter(c => c.status !== 'Returned').reduce((sum, item) => sum + item.principal, 0);
+            const totalDebts = currentDebts.filter(d => d.status !== 'Paid').reduce((sum, item) => sum + item.principal, 0);
+            const totalStocks = currentStocks.reduce((sum, item) => sum + (item.currentPrice * item.quantity), 0);
+            const netWorth = totalCredits - totalDebts + totalStocks;
+
+            document.getElementById('totalStocks').textContent = `₹${totalStocks.toLocaleString('en-IN')}`;
+            document.getElementById('totalCredits').textContent = `₹${totalCredits.toLocaleString('en-IN')}`;
+            document.getElementById('totalDebts').textContent = `₹${totalDebts.toLocaleString('en-IN')}`;
+            document.getElementById('netWorth').textContent = `₹${netWorth.toLocaleString('en-IN')}`;
+            
+            updateCharts(totalCredits, totalDebts, totalStocks);
+        };
+
+        const initCharts = () => {
+            const creditDebtCtx = document.getElementById('creditDebtChart').getContext('2d');
+            creditDebtChart = new Chart(creditDebtCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Credits', 'Debts'],
+                    datasets: [{
+                        data: [0, 0],
+                        backgroundColor: ['#2563eb', '#dc2626'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, grid: { color: '#374151' } } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            const netWorthCtx = document.getElementById('netWorthChart').getContext('2d');
+            netWorthChart = new Chart(netWorthCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Stocks', 'Credits', 'Debts'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: ['#34d399', '#60a5fa', '#f87171'],
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        };
+
+        const updateCharts = (credits, debts, stocks) => {
+            creditDebtChart.data.datasets[0].data = [credits, debts];
+            creditDebtChart.update();
+
+            netWorthChart.data.datasets[0].data = [stocks, credits, debts];
+            netWorthChart.update();
+        };
+
+        const renderStocks = () => {
+            stocksTableBody.innerHTML = '';
+            currentStocks.forEach(stock => {
+                const profitLoss = ((stock.currentPrice - stock.buyPrice) / stock.buyPrice) * 100;
+                const profitLossColor = profitLoss >= 0 ? 'text-green-400' : 'text-red-400';
+                const row = document.createElement('tr');
+                row.className = 'border-b border-gray-700';
+                row.innerHTML = `
+                    <td class="p-3">${stock.symbol}</td>
+                    <td class="p-3">${stock.quantity}</td>
+                    <td class="p-3">₹${stock.buyPrice.toFixed(2)}</td>
+                    <td class="p-3">₹${stock.currentPrice.toFixed(2)}</td>
+                    <td class="p-3 ${profitLossColor}">${profitLoss.toFixed(2)}%</td>
+                    <td class="p-3">${stock.source}</td>
+                    <td class="p-3">
+                        <button onclick="deleteItem('stocks', '${stock.id}')" class="text-red-400 hover:text-red-300">Delete</button>
+                    </td>
+                `;
+                stocksTableBody.appendChild(row);
+            });
+        };
+        
+        const renderCredits = () => {
+            creditsTableBody.innerHTML = '';
+            currentCredits.forEach(credit => {
+                const days = Math.floor((new Date() - new Date(credit.dateGiven).getTime()) / (1000 * 60 * 60 * 24));
+                const interest = (credit.principal * (credit.interestRate / 100) * days) / 365;
+                const row = document.createElement('tr');
+                row.className = `border-b border-gray-700 ${credit.status === 'Returned' ? 'text-gray-500 line-through' : ''}`;
+                row.innerHTML = `
+                    <td class="p-3">${credit.name}</td>
+                    <td class="p-3">₹${credit.principal.toLocaleString('en-IN')}</td>
+                    <td class="p-3">₹${interest.toFixed(2)}</td>
+                    <td class="p-3">${credit.status}</td>
+                    <td class="p-3">${new Date(credit.dateGiven).toLocaleDateString()}</td>
+                    <td class="p-3">
+                        <button onclick="deleteItem('credits', '${credit.id}')" class="text-red-400 hover:text-red-300">Delete</button>
+                    </td>
+                `;
+                creditsTableBody.appendChild(row);
+            });
+        };
+
+        const renderDebts = () => {
+            debtsTableBody.innerHTML = '';
+            currentDebts.forEach(debt => {
+                const days = Math.floor((new Date() - new Date(debt.dateTaken).getTime()) / (1000 * 60 * 60 * 24));
+                const interest = (debt.principal * (debt.interestRate / 100) * days) / 365;
+                const row = document.createElement('tr');
+                row.className = `border-b border-gray-700 ${debt.status === 'Paid' ? 'text-gray-500 line-through' : ''}`;
+                const actionButton = debt.status !== 'Paid' ?
+                    `<button onclick="markAsPaid('${debt.id}')" class="bg-green-600 text-white text-xs px-3 py-1 rounded-full hover:bg-green-700">Mark Paid</button>` :
+                    '';
+                row.innerHTML = `
+                    <td class="p-3">${debt.name}</td>
+                    <td class="p-3">₹${debt.principal.toLocaleString('en-IN')}</td>
+                    <td class="p-3">₹${interest.toFixed(2)}</td>
+                    <td class="p-3">${debt.status}</td>
+                    <td class="p-3">${new Date(debt.dateTaken).toLocaleDateString()}</td>
+                    <td class="p-3">${actionButton}</td>
+                `;
+                debtsTableBody.appendChild(row);
+            });
+        };
+
+        // CRUD Operations
+        const addItem = async (collectionName, data) => {
+            try {
+                await addDoc(collection(db, `/artifacts/${appId}/users/${userId}/${collectionName}`), {
+                    ...data,
+                    createdAt: serverTimestamp()
+                });
+                console.log("Document added successfully!");
+            } catch (e) {
+                console.error("Error adding document: ", e);
+            }
+        };
+
+        window.deleteItem = async (collectionName, id) => {
+            try {
+                await deleteDoc(doc(db, `/artifacts/${appId}/users/${userId}/${collectionName}`, id));
+                console.log("Document deleted successfully!");
+            } catch (e) {
+                console.error("Error deleting document: ", e);
+            }
+        };
+
+        window.markAsPaid = async (debtId) => {
+            try {
+                const debtRef = doc(db, `/artifacts/${appId}/users/${userId}/debts`, debtId);
+                const debtQuerySnapshot = await getDocs(query(collection(db, `/artifacts/${appId}/users/${userId}/debts`), where("__name__", "==", debtId)));
+                if (debtQuerySnapshot.empty) return;
+                const debtData = debtQuerySnapshot.docs[0].data();
+
+                const creditsQuery = query(
+                    collection(db, `/artifacts/${appId}/users/${userId}/credits`),
+                    where("name", "==", debtData.name),
+                    where("principal", "==", debtData.principal),
+                    where("status", "==", "Outstanding")
+                );
+                const creditsSnapshot = await getDocs(creditsQuery);
+
+                const batch = writeBatch(db);
+                batch.update(debtRef, { status: 'Paid', datePaid: serverTimestamp() });
+
+                if (!creditsSnapshot.empty) {
+                    const creditRef = doc(db, `/artifacts/${appId}/users/${userId}/credits`, creditsSnapshot.docs[0].id);
+                    batch.update(creditRef, { status: 'Returned', dateReturned: serverTimestamp() });
+                }
+                
+                await batch.commit();
+            } catch (e) {
+                console.error("Error marking debt as paid:", e);
+            }
+        };
+
+        // Zerodha API call simulation
+        const fetchZerodhaPortfolio = async () => {
+            loadingOverlay.classList.remove('hidden');
+            try {
+                // In a production environment, this would call your deployed Python backend
+                // For this demo, we use a placeholder response
+                const response = await new Promise(resolve => setTimeout(() => {
+                    resolve({
+                        data: [
+                            { symbol: "RELIANCE.NS", quantity: 50, buyPrice: 2800.0, currentPrice: 2950.25, datePurchased: "2024-03-10", source: "Zerodha" },
+                            { symbol: "TCS.NS", quantity: 25, buyPrice: 3800.0, currentPrice: 3850.50, datePurchased: "2024-04-15", source: "Zerodha" }
+                        ]
+                    });
+                }, 1500));
+                
+                const batch = writeBatch(db);
+                const stocksColRef = collection(db, `/artifacts/${appId}/users/${userId}/stocks`);
+                
+                const existingStocksSnapshot = await getDocs(query(stocksColRef, where("source", "==", "Zerodha")));
+                existingStocksSnapshot.forEach(doc => batch.delete(doc.ref));
+
+                response.data.forEach(stock => {
+                    batch.set(doc(stocksColRef), {
+                        ...stock,
+                        createdAt: serverTimestamp()
+                    });
+                });
+                
+                await batch.commit();
+            } catch (e) {
+                console.error("Error fetching Zerodha data:", e);
+            } finally {
+                loadingOverlay.classList.add('hidden');
+            }
+        };
+        
+        // AI Agent Functionality
+        const getAIAlerts = async () => {
+            loadingOverlay.classList.remove('hidden');
+            try {
+                const totalCredits = currentCredits.filter(c => c.status !== 'Returned').reduce((sum, item) => sum + item.principal, 0);
+                const totalDebts = currentDebts.filter(d => d.status !== 'Paid').reduce((sum, item) => sum + item.principal, 0);
+
+                const prompt = `Based on the following financial data, provide a professional, one-paragraph analysis of the user's financial health, and offer a specific actionable tip. Do not use emojis.
+- Total outstanding credits: ₹${totalCredits.toLocaleString('en-IN')}
+- Total outstanding debts: ₹${totalDebts.toLocaleString('en-IN')}
+- My stock portfolio has a combined value of ₹${currentStocks.reduce((sum, item) => sum + (item.currentPrice * item.quantity), 0).toLocaleString('en-IN')}`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: prompt }] }],
+                    tools: [{ "google_search": {} }],
+                    systemInstruction: {
+                        parts: [{ text: "You are a professional financial advisor with 30 years of experience. Your tone should be empathetic, non-judgmental, and highly informed. The user has a dashboard that tracks credits, debts, and stocks. Your advice should be specific and actionable, tailored to their financial profile." }]
+                    },
+                };
+                
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                alertModalContent.textContent = text || "Sorry, I couldn't generate an alert at this time. Please try again.";
+                alertModal.classList.remove('hidden');
+            } catch (e) {
+                console.error("Error calling Gemini API:", e);
+                alertModalContent.textContent = "An error occurred while fetching insights. Please check your network and try again.";
+                alertModal.classList.remove('hidden');
+            } finally {
+                loadingOverlay.classList.add('hidden');
+            }
+        };
+
+        // Event Listeners
+        document.getElementById('stockForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const data = {
+                symbol: document.getElementById('stockSymbol').value,
+                quantity: parseFloat(document.getElementById('stockQuantity').value),
+                buyPrice: parseFloat(document.getElementById('stockBuyPrice').value),
+                currentPrice: parseFloat(document.getElementById('stockBuyPrice').value),
+                datePurchased: document.getElementById('stockDate').value,
+                source: "Manual"
+            };
+            addItem('stocks', data);
+            e.target.reset();
+        });
+        document.getElementById('creditForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('creditName').value,
+                principal: parseFloat(document.getElementById('creditPrincipal').value),
+                dateGiven: document.getElementById('creditDate').value,
+                interestRate: parseFloat(document.getElementById('creditInterestRate').value),
+                status: 'Outstanding'
+            };
+            addItem('credits', data);
+            e.target.reset();
+        });
+        document.getElementById('debtForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('debtName').value,
+                principal: parseFloat(document.getElementById('debtPrincipal').value),
+                dateTaken: document.getElementById('debtDate').value,
+                interestRate: parseFloat(document.getElementById('debtInterestRate').value),
+                status: 'Outstanding'
+            };
+            addItem('debts', data);
+            e.target.reset();
+        });
+
+        document.getElementById('dashboardBtn').addEventListener('click', () => switchView('dashboard'));
+        document.getElementById('stocksBtn').addEventListener('click', () => switchView('stocks'));
+        document.getElementById('creditsBtn').addEventListener('click', () => switchView('credits'));
+        document.getElementById('debtsBtn').addEventListener('click', () => switchView('debts'));
+        document.getElementById('fetchZerodhaBtn').addEventListener('click', fetchZerodhaPortfolio);
+        document.getElementById('getAIAlertsBtn').addEventListener('click', getAIAlerts);
+        document.getElementById('alertModalCloseBtn').addEventListener('click', () => alertModal.classList.add('hidden'));
+
+        const switchView = (viewName) => {
+            Object.values(views).forEach(v => {
+                if(v.id.includes('View')) v.classList.add('hidden');
+            });
+            Object.values(navButtons).forEach(b => b.classList.remove('active'));
+            views[viewName].classList.remove('hidden');
+            navButtons[viewName].classList.add('active');
+        };
+
+        initFirebase();
+    </script>
+</body>
+</html>
