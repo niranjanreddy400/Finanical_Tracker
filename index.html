@@ -144,7 +144,8 @@
                 <form id="add-credit-form" class="bg-gray-900 p-6 rounded-xl shadow-inner grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                     <input type="text" id="credit-person" placeholder="Person Name" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <input type="number" id="credit-amount" placeholder="Amount (₹)" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <input type="number" id="credit-rate" placeholder="Interest Rate (%)" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="number" id="credit-rate" placeholder="Interest Rate (%)" step="0.01" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="number" id="credit-tenure" placeholder="Tenure (months)" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <button type="submit" class="bg-indigo-600 text-white font-bold py-2 rounded-lg hover:bg-indigo-700 transition-colors duration-200">Add Credit</button>
                 </form>
                 <div class="overflow-x-auto bg-gray-900 rounded-xl">
@@ -153,10 +154,12 @@
                             <tr>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Person</th>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Principal</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Tenure</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Rate (%)</th>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Interest</th>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Total</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Rate (%)</th>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
@@ -173,7 +176,8 @@
                 <form id="add-debt-form" class="bg-gray-900 p-6 rounded-xl shadow-inner grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                     <input type="text" id="debt-person" placeholder="Person Name" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <input type="number" id="debt-amount" placeholder="Amount (₹)" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <input type="number" id="debt-rate" placeholder="Interest Rate (%)" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="number" id="debt-rate" placeholder="Interest Rate (%)" step="0.01" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="number" id="debt-tenure" placeholder="Tenure (months)" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <button type="submit" class="bg-indigo-600 text-white font-bold py-2 rounded-lg hover:bg-indigo-700 transition-colors duration-200">Add Debt</button>
                 </form>
                 <div class="overflow-x-auto bg-gray-900 rounded-xl">
@@ -182,10 +186,12 @@
                             <tr>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Person</th>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Principal</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Tenure</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Rate (%)</th>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Interest</th>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Total</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Rate (%)</th>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
@@ -279,6 +285,9 @@
         let totalStocks = 0;
         let totalCredits = 0;
         let totalDebts = 0;
+        let creditsData = [];
+        let debtsData = [];
+        let stocksData = [];
 
         // Firebase Authentication
         onAuthStateChanged(auth, async (user) => {
@@ -364,32 +373,37 @@
 
             const creditsColRef = collection(db, `/artifacts/${appId}/users/${userId}/credits`);
             onSnapshot(creditsColRef, (snapshot) => {
-                const credits = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                updateCreditsTable(credits);
+                creditsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                updateCreditsTable(creditsData);
                 updateDashboard();
             });
 
             const debtsColRef = collection(db, `/artifacts/${appId}/users/${userId}/debts`);
             onSnapshot(debtsColRef, (snapshot) => {
-                const debts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                updateDebtsTable(debts);
+                debtsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                updateDebtsTable(debtsData);
                 updateDashboard();
             });
 
             const stocksColRef = collection(db, `/artifacts/${appId}/users/${userId}/stocks`);
             onSnapshot(stocksColRef, (snapshot) => {
-                const stocks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                updateStocksTable(stocks);
+                stocksData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                updateStocksTable(stocksData);
                 updateDashboard();
             });
         }
 
-        function calculateInterest(principal, rate, date) {
+        function calculateInterest(principal, rate, tenure, startDate) {
             const today = new Date();
-            const dateGiven = new Date(date.seconds * 1000);
-            const daysPassed = Math.ceil((today - dateGiven) / (1000 * 60 * 60 * 24));
-            const dailyRate = rate / 365 / 100;
-            return principal * dailyRate * daysPassed;
+            const dateGiven = startDate.seconds ? new Date(startDate.seconds * 1000) : new Date(startDate);
+            const monthsPassed = Math.min(
+                Math.ceil((today - dateGiven) / (1000 * 60 * 60 * 24 * 30)),
+                tenure
+            );
+            
+            // Simple interest calculation: P * R * T / 100
+            const timeInYears = monthsPassed / 12;
+            return principal * rate * timeInYears / 100;
         }
 
         // Dashboard Logic
@@ -398,19 +412,26 @@
             totalCredits = 0;
             totalDebts = 0;
             
-            Array.from(stocksTable.rows).forEach(row => {
-                const value = parseFloat(row.cells[4].textContent.replace('₹', '').replace(/,/g, ''));
-                if (!isNaN(value)) totalStocks += value;
+            // Calculate from data arrays instead of DOM
+            stocksData.forEach(stock => {
+                const currentValue = stock.quantity * stock.current_price;
+                totalStocks += currentValue;
             });
             
-            Array.from(creditsTable.rows).forEach(row => {
-                const total = parseFloat(row.cells[3].textContent.replace('₹', '').replace(/,/g, ''));
-                if (!isNaN(total)) totalCredits += total;
+            creditsData.forEach(credit => {
+                if (!credit.isPaid) {
+                    const interest = calculateInterest(credit.amount, credit.rate, credit.tenure, credit.createdAt);
+                    const total = credit.amount + interest;
+                    totalCredits += total;
+                }
             });
             
-            Array.from(debtsTable.rows).forEach(row => {
-                const total = parseFloat(row.cells[3].textContent.replace('₹', '').replace(/,/g, ''));
-                if (!isNaN(total)) totalDebts += total;
+            debtsData.forEach(debt => {
+                if (!debt.isPaid) {
+                    const interest = calculateInterest(debt.amount, debt.rate, debt.tenure, debt.createdAt);
+                    const total = debt.amount + interest;
+                    totalDebts += total;
+                }
             });
 
             const netWorth = totalStocks + totalCredits - totalDebts;
@@ -461,22 +482,39 @@
             creditsTable.innerHTML = '';
             credits.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
             credits.forEach(item => {
-                const interest = calculateInterest(item.amount, item.rate, item.createdAt);
+                const interest = calculateInterest(item.amount, item.rate, item.tenure, item.createdAt);
                 const total = item.amount + interest;
+                const status = item.isPaid ? 'Paid' : 'Pending';
+                const statusClass = item.isPaid ? 'text-green-400' : 'text-yellow-400';
                 const row = `
-                    <tr class="${item.isPaid ? 'line-through text-gray-500' : ''}">
+                    <tr class="${item.isPaid ? 'opacity-60' : ''}">
                         <td class="px-4 py-2 whitespace-nowrap">${item.person}</td>
                         <td class="px-4 py-2 whitespace-nowrap">₹${item.amount.toLocaleString('en-IN')}</td>
+                        <td class="px-4 py-2 whitespace-nowrap">${item.tenure} months</td>
+                        <td class="px-4 py-2 whitespace-nowrap">${item.rate}%</td>
                         <td class="px-4 py-2 whitespace-nowrap">₹${interest.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</td>
                         <td class="px-4 py-2 whitespace-nowrap">₹${total.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</td>
-                        <td class="px-4 py-2 whitespace-nowrap">${item.rate}%</td>
                         <td class="px-4 py-2 whitespace-nowrap">${item.createdAt.toDate().toLocaleDateString()}</td>
+                        <td class="px-4 py-2 whitespace-nowrap ${statusClass}">${status}</td>
                         <td class="px-4 py-2 whitespace-nowrap">
+                            ${!item.isPaid ? `<button data-id="${item.id}" class="mark-credit-paid-btn text-green-500 hover:text-green-700 mr-2">Mark Paid</button>` : ''}
                             <button data-id="${item.id}" class="delete-credit-btn text-red-500 hover:text-red-700">Delete</button>
                         </td>
                     </tr>
                 `;
                 creditsTable.innerHTML += row;
+            });
+
+            document.querySelectorAll('.mark-credit-paid-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const id = e.target.dataset.id;
+                    showModal('Are you sure you want to mark this credit as paid?', async () => {
+                        await updateDoc(doc(db, `/artifacts/${appId}/users/${userId}/credits`, id), { 
+                            isPaid: true,
+                            paidAt: serverTimestamp()
+                        });
+                    });
+                });
             });
 
             document.querySelectorAll('.delete-credit-btn').forEach(btn => {
@@ -493,19 +531,23 @@
             debtsTable.innerHTML = '';
             debts.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
             debts.forEach(item => {
-                const interest = calculateInterest(item.amount, item.rate, item.createdAt);
+                const interest = calculateInterest(item.amount, item.rate, item.tenure, item.createdAt);
                 const total = item.amount + interest;
+                const status = item.isPaid ? 'Paid' : 'Pending';
+                const statusClass = item.isPaid ? 'text-green-400' : 'text-red-400';
                 const row = `
-                    <tr class="${item.isPaid ? 'line-through text-gray-500' : ''}">
+                    <tr class="${item.isPaid ? 'opacity-60' : ''}">
                         <td class="px-4 py-2 whitespace-nowrap">${item.person}</td>
                         <td class="px-4 py-2 whitespace-nowrap">₹${item.amount.toLocaleString('en-IN')}</td>
+                        <td class="px-4 py-2 whitespace-nowrap">${item.tenure} months</td>
+                        <td class="px-4 py-2 whitespace-nowrap">${item.rate}%</td>
                         <td class="px-4 py-2 whitespace-nowrap">₹${interest.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</td>
                         <td class="px-4 py-2 whitespace-nowrap">₹${total.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</td>
-                        <td class="px-4 py-2 whitespace-nowrap">${item.rate}%</td>
                         <td class="px-4 py-2 whitespace-nowrap">${item.createdAt.toDate().toLocaleDateString()}</td>
+                        <td class="px-4 py-2 whitespace-nowrap ${statusClass}">${status}</td>
                         <td class="px-4 py-2 whitespace-nowrap">
-                            <button data-id="${item.id}" class="delete-debt-btn text-red-500 hover:text-red-700">Delete</button>
                             ${!item.isPaid ? `<button data-id="${item.id}" data-person="${item.person}" data-amount="${item.amount}" class="mark-paid-btn text-green-500 hover:text-green-700 ml-2">Mark Paid</button>` : ''}
+                            <button data-id="${item.id}" class="delete-debt-btn text-red-500 hover:text-red-700 ml-2">Delete</button>
                         </td>
                     </tr>
                 `;
@@ -530,7 +572,10 @@
                     showModal('Are you sure you want to mark this debt as paid? This will also update the corresponding credit.', async () => {
                         const batch = writeBatch(db);
                         const debtRef = doc(db, `/artifacts/${appId}/users/${userId}/debts`, id);
-                        batch.update(debtRef, { isPaid: true });
+                        batch.update(debtRef, { 
+                            isPaid: true,
+                            paidAt: serverTimestamp()
+                        });
                         
                         const creditsRef = collection(db, `/artifacts/${appId}/users/${userId}/credits`);
                         const q = query(creditsRef, where("person", "==", person), where("amount", "==", amount), where("isPaid", "==", false));
@@ -538,7 +583,10 @@
 
                         if (!creditsSnapshot.empty) {
                             creditsSnapshot.forEach(doc => {
-                                batch.update(doc.ref, { isPaid: true });
+                                batch.update(doc.ref, { 
+                                    isPaid: true,
+                                    paidAt: serverTimestamp()
+                                });
                             });
                         }
                         await batch.commit();
@@ -575,17 +623,21 @@
             const person = document.getElementById('credit-person').value;
             const amount = parseFloat(document.getElementById('credit-amount').value);
             const rate = parseFloat(document.getElementById('credit-rate').value);
+            const tenure = parseInt(document.getElementById('credit-tenure').value);
             
-            if (person && amount > 0 && rate >= 0) {
+            if (person && amount > 0 && rate >= 0 && tenure > 0) {
                 const creditsColRef = collection(db, `/artifacts/${appId}/users/${userId}/credits`);
                 await addDoc(creditsColRef, {
                     person,
                     amount,
                     rate,
+                    tenure,
                     isPaid: false,
                     createdAt: serverTimestamp()
                 });
                 addCreditForm.reset();
+            } else {
+                alert('Please fill all fields with valid values');
             }
         });
 
@@ -594,17 +646,21 @@
             const person = document.getElementById('debt-person').value;
             const amount = parseFloat(document.getElementById('debt-amount').value);
             const rate = parseFloat(document.getElementById('debt-rate').value);
+            const tenure = parseInt(document.getElementById('debt-tenure').value);
 
-            if (person && amount > 0 && rate >= 0) {
+            if (person && amount > 0 && rate >= 0 && tenure > 0) {
                 const debtsColRef = collection(db, `/artifacts/${appId}/users/${userId}/debts`);
                 await addDoc(debtsColRef, {
                     person,
                     amount,
                     rate,
+                    tenure,
                     isPaid: false,
                     createdAt: serverTimestamp()
                 });
                 addDebtForm.reset();
+            } else {
+                alert('Please fill all fields with valid values');
             }
         });
         
