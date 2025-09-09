@@ -1,426 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Financial Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body {
-            font-family: 'Inter', 'Segoe UI', 'Arial', sans-serif;
-            background: radial-gradient(ellipse at top left, #1a1a2e 60%, #23243a 100%);
-            color: #fff;
-        }
-        .bg-gray-800 {
-            background: linear-gradient(135deg, #23243a 60%, #1a1a2e 100%);
-        }
-        .bg-gray-900 {
-            background: linear-gradient(135deg, #0f0f1c 60%, #23243a 100%);
-        }
-        .tab-button {
-            transition: all 0.3s ease;
-            background: rgba(255,255,255,0.04);
-            color: #fff;
-            margin-right: 0.5rem;
-            border: none;
-            font-size: 1.1rem;
-            letter-spacing: 0.05em;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        }
-        .tab-button.active {
-            border-bottom: 3px solid #e50914;
-            color: #e50914;
-            font-weight: 700;
-            background: rgba(229,9,20,0.08);
-        }
-        .rounded-2xl, .rounded-xl, .rounded-lg {
-            border-radius: 1.5rem !important;
-        }
-        .shadow-lg, .shadow {
-            box-shadow: 0 8px 32px rgba(229,9,20,0.15), 0 1.5px 8px rgba(80,0,80,0.10);
-        }
-        .card {
-            background: linear-gradient(135deg, #23243a 60%, #1a1a2e 100%);
-            color: #fff;
-            border-radius: 1.5rem;
-            box-shadow: 0 8px 32px rgba(229,9,20,0.10);
-            padding: 2rem;
-            margin-bottom: 1rem;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .btn-primary {
-            background: linear-gradient(90deg, #e50914 0%, #b0060f 100%);
-            color: #fff;
-            font-weight: 600;
-            border-radius: 1rem;
-            box-shadow: 0 2px 8px rgba(229,9,20,0.15);
-            transition: background 0.3s, box-shadow 0.3s;
-            border: none;
-        }
-        .btn-primary:hover {
-            background: linear-gradient(90deg, #b0060f 0%, #e50914 100%);
-            box-shadow: 0 4px 16px rgba(229,9,20,0.25);
-        }
-        .text-indigo-500 {
-            color: #e50914 !important;
-        }
-        .text-3xl {
-            color: #e50914;
-        }
-        .modal {
-            background: linear-gradient(135deg, #23243a 60%, #e50914 100%);
-            color: #fff;
-            border-radius: 1.5rem;
-            box-shadow: 0 8px 32px rgba(229,9,20,0.15);
-        }
-        table {
-            background: rgba(255,255,255,0.02);
-            border-radius: 1rem;
-            overflow: hidden;
-        }
-        th, td {
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        th {
-            color: #e50914;
-            font-weight: 600;
-            background: rgba(229,9,20,0.08);
-        }
-        .shadow-inner {
-            box-shadow: 0 2px 8px rgba(229,9,20,0.10) inset;
-        }
-        input, select {
-            background: rgba(255,255,255,0.08);
-            color: #fff;
-            border: 1px solid rgba(255,255,255,0.10);
-        }
-        input:focus, select:focus {
-            outline: none;
-            border-color: #e50914;
-            box-shadow: 0 0 0 2px #e50914;
-        }
-        .text-green-400 {
-            color: #00ffb0;
-        }
-        .text-red-400 {
-            color: #e50914;
-        }
-        .text-blue-400 {
-            color: #1fa2ff;
-        }
-        /* Netflix-style header */
-        h1, h2, h3 {
-            font-family: 'Inter', 'Segoe UI', 'Arial', sans-serif;
-            letter-spacing: 0.04em;
-        }
-        /* Glassmorphism effect for cards */
-        .card, .modal, .shadow-inner {
-            backdrop-filter: blur(8px);
-            background: rgba(35,36,58,0.85);
-        }
-        /* Remove default button border */
-        button {
-            border: none;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pro Financial Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; background: radial-gradient(ellipse at top left, #1a1a2e 60%, #23243a 100%); color: #fff; }
+    .tab-button { transition: all .3s ease; background: rgba(255,255,255,0.04); }
+    .tab-button.active { border-bottom: 3px solid #e50914; color: #e50914; font-weight: 700; background: rgba(229,9,20,0.08); }
+    .card { backdrop-filter: blur(8px); background: rgba(35,36,58,0.85); border-radius: 1rem; padding: 1.5rem; box-shadow: 0 8px 32px rgba(229,9,20,0.15); }
+    .fade { transition: opacity .3s ease; }
+    .tab-content.hidden { opacity: 0; pointer-events: none; height: 0; overflow: hidden; }
+    .tab-content:not(.hidden) { opacity: 1; height: auto; }
+    table tbody tr:hover { background: rgba(255,255,255,0.05); }
+  </style>
 </head>
 <body class="bg-gray-900 text-white min-h-screen flex items-center justify-center p-4">
 
-    <!-- Loading Overlay -->
-    <div id="loading-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 hidden">
-        <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-indigo-500"></div>
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed bottom-5 right-5 space-y-2 z-50"></div>
+
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 hidden">
+    <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-indigo-500"></div>
+  </div>
+
+  <!-- Initial Login -->
+  <div id="initial-login" class="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 z-50">
+    <div class="bg-gray-800 rounded-2xl shadow-lg p-10 flex flex-col items-center max-w-sm w-full">
+      <img src="https://cdn-icons-png.flaticon.com/512/2920/2920227.png" class="w-20 h-20 mb-4" />
+      <h1 class="text-3xl font-bold text-indigo-500 mb-2">Welcome to Pro Financial Dashboard</h1>
+      <p class="text-gray-400 mb-6 text-center">Track your stocks, credits, debts, and budget in one place.</p>
+      <button id="start-login-btn" class="btn-primary w-full py-3 px-6 text-lg font-bold">Get Started</button>
+    </div>
+  </div>
+
+  <!-- Login -->
+  <div id="login-container" class="bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-sm hidden">
+    <h2 class="text-3xl font-bold text-center mb-6 text-indigo-500">Login</h2>
+    <button id="login-btn" onclick="onLoginClick()" class="btn-primary w-full py-3 px-6">Sign in Anonymously</button>
+  </div>
+
+  <!-- App Container -->
+  <div id="app-container" class="bg-gray-800 rounded-2xl shadow-lg w-full max-w-7xl flex flex-col hidden">
+
+    <!-- Header -->
+    <div class="p-6 bg-gray-900 flex justify-between items-center rounded-t-2xl">
+      <h1 class="text-2xl font-bold text-indigo-500">My Financial Dashboard</h1>
+      <div class="flex items-center space-x-4">
+        <span id="user-id-display" class="bg-gray-700 text-gray-300 text-xs px-3 py-1 rounded-full">User ID: N/A</span>
+        <button id="logout-btn" onclick="onLogoutClick()" class="btn-primary px-4 py-2">Logout</button>
+      </div>
     </div>
 
-    <!-- Initial Login Page -->
-    <div id="initial-login" class="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 z-50">
-        <div class="bg-gray-800 rounded-2xl shadow-lg p-10 flex flex-col items-center max-w-sm w-full">
-            <img src="https://cdn-icons-png.flaticon.com/512/2920/2920227.png" alt="Finance Logo" class="w-20 h-20 mb-4" />
-            <h1 class="text-3xl font-bold text-indigo-500 mb-2">Welcome to Pro Financial Dashboard</h1>
-            <p class="text-gray-400 mb-6 text-center">Track your stocks, credits, debts, and budget in one place.</p>
-            <button id="start-login-btn" class="btn-primary w-full py-3 px-6 text-lg font-bold">Get Started</button>
-        </div>
+    <!-- Tabs -->
+    <div class="flex space-x-2 border-b-2 border-gray-700 px-6 pt-4">
+      <button id="dashboard-tab" class="tab-button active px-4 py-2 rounded-t-lg" onclick="switchTab('dashboard')">Dashboard</button>
+      <button id="stocks-tab" class="tab-button px-4 py-2 rounded-t-lg" onclick="switchTab('stocks')">Stocks</button>
+      <button id="credits-tab" class="tab-button px-4 py-2 rounded-t-lg" onclick="switchTab('credits')">Credits</button>
+      <button id="debts-tab" class="tab-button px-4 py-2 rounded-t-lg" onclick="switchTab('debts')">Debts</button>
+      <button id="budget-tab" class="tab-button px-4 py-2 rounded-t-lg" onclick="switchTab('budget')">Budget</button>
     </div>
 
-    <!-- Login Page -->
-    <div id="login-container" class="bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-sm hidden">
-        <h2 class="text-3xl font-bold text-center mb-6 text-indigo-500">Login</h2>
-        <p class="text-center text-gray-400 mb-6">Sign in to access your dashboard</p>
-        <div class="space-y-4">
-            <button id="login-btn" class="btn-primary w-full py-3 px-6" onclick="onLoginClick()">Sign in Anonymously</button>
+    <!-- Views -->
+    <div class="flex-grow flex flex-col p-6 space-y-4">
+      <!-- Dashboard -->
+      <div id="dashboard-view" class="tab-content grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 fade">
+        <div class="card text-center">
+          <h2 class="text-xl font-bold mb-2"><i class="fa-solid fa-wallet mr-2"></i>Net Worth</h2>
+          <div id="net-worth-display" class="text-3xl font-bold">₹ 0</div>
+          <canvas id="netWorthChart" style="max-width:300px; margin-top:1rem;"></canvas>
         </div>
-        <p class="text-center text-gray-500 text-sm mt-4">No password needed. Your data is tied to this device.</p>
+        <div class="card text-center">
+          <h2 class="text-xl font-bold mb-2"><i class="fa-solid fa-chart-line mr-2"></i>Stocks</h2>
+          <canvas id="stocksChart" style="max-width:300px;"></canvas>
+        </div>
+        <div class="card text-center">
+          <h2 class="text-xl font-bold mb-2"><i class="fa-solid fa-coins mr-2"></i>Budget</h2>
+          <canvas id="budgetPieChart" style="max-width:300px;"></canvas>
+        </div>
+      </div>
+
+      <!-- Stocks -->
+      <div id="stocks-view" class="tab-content hidden fade">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold">Stocks</h2>
+          <button id="fetch-zerodha-btn" onclick="onFetchZerodhaClick()" class="btn-primary text-sm px-4 py-2">Fetch from Zerodha</button>
+        </div>
+        <div class="overflow-x-auto bg-gray-900 rounded-xl">
+          <table class="min-w-full">
+            <thead><tr><th>Symbol</th><th>Qty</th><th>Buy</th><th>Current</th><th>Value</th><th>P&L</th></tr></thead>
+            <tbody id="stocks-table" class="divide-y divide-gray-700"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Credits -->
+      <div id="credits-view" class="tab-content hidden fade">
+        <h2 class="text-xl font-bold mb-4">Credits</h2>
+        <form id="add-credit-form" onsubmit="onAddCreditSubmit(event)" class="grid gap-4 bg-gray-900 p-4 rounded-xl">
+          <input id="credit-person" placeholder="Person Name" required class="px-4 py-2 rounded bg-gray-800" />
+          <input id="credit-amount" type="number" placeholder="Amount (₹)" required class="px-4 py-2 rounded bg-gray-800" />
+          <input id="credit-rate" type="number" step="0.01" placeholder="Rate (%)" required class="px-4 py-2 rounded bg-gray-800" />
+          <button class="btn-primary px-4 py-2">Add Credit</button>
+        </form>
+        <table class="min-w-full mt-4"><tbody id="credits-table"></tbody></table>
+      </div>
+
+      <!-- Debts -->
+      <div id="debts-view" class="tab-content hidden fade">
+        <h2 class="text-xl font-bold mb-4">Debts</h2>
+        <form id="add-debt-form" onsubmit="onAddDebtSubmit(event)" class="grid gap-4 bg-gray-900 p-4 rounded-xl">
+          <input id="debt-person" placeholder="Person Name" required class="px-4 py-2 rounded bg-gray-800" />
+          <input id="debt-amount" type="number" placeholder="Amount (₹)" required class="px-4 py-2 rounded bg-gray-800" />
+          <input id="debt-rate" type="number" step="0.01" placeholder="Rate (%)" required class="px-4 py-2 rounded bg-gray-800" />
+          <input id="debt-date" type="date" required class="px-4 py-2 rounded bg-gray-800" />
+          <button class="btn-primary px-4 py-2">Add Debt</button>
+        </form>
+        <table class="min-w-full mt-4"><tbody id="debts-table"></tbody></table>
+      </div>
+
+      <!-- Budget -->
+      <div id="budget-view" class="tab-content hidden fade">
+        <h2 class="text-xl font-bold mb-4">Budget Tracker</h2>
+        <form id="add-transaction-form" onsubmit="onAddTransactionSubmit(event)" class="grid gap-4 bg-gray-900 p-4 rounded-xl">
+          <select id="transaction-type" required><option value="">Type</option><option value="inflow">Inflow</option><option value="outflow">Outflow</option></select>
+          <input id="transaction-category" placeholder="Category" required class="px-4 py-2 rounded bg-gray-800" />
+          <input id="transaction-amount" type="number" placeholder="Amount (₹)" required class="px-4 py-2 rounded bg-gray-800" />
+          <input id="transaction-description" placeholder="Description" class="px-4 py-2 rounded bg-gray-800" />
+          <button class="btn-primary px-4 py-2">Add Transaction</button>
+        </form>
+        <table class="min-w-full mt-4"><tbody id="transactions-table"></tbody></table>
+      </div>
     </div>
+  </div>
 
-    <!-- Main Dashboard -->
-    <div id="app-container" class="bg-gray-800 rounded-2xl shadow-lg w-full max-w-7xl h-auto overflow-hidden flex flex-col hidden">
-
-        <!-- Header -->
-        <div class="p-6 bg-gray-900 flex justify-between items-center rounded-t-2xl">
-            <h1 class="text-2xl font-bold text-indigo-500">My Financial Dashboard</h1>
-            <div class="flex items-center space-x-4">
-                <span id="user-id-display" class="bg-gray-700 text-gray-300 text-xs px-3 py-1 rounded-full truncate max-w-xs">User ID: N/A</span>
-                <button id="logout-btn" class="btn-primary px-4 py-2" onclick="onLogoutClick()">Logout</button>
-            </div>
-        </div>
-
-        <!-- Tab Navigation -->
-        <div class="flex-grow flex flex-col p-6 space-y-4">
-            <div class="flex space-x-2 border-b-2 border-gray-700">
-                <button id="dashboard-tab" class="tab-button px-4 py-2 text-sm font-medium rounded-t-lg active" onclick="switchTab('dashboard')">Dashboard</button>
-                <button id="stocks-tab" class="tab-button px-4 py-2 text-sm font-medium rounded-t-lg" onclick="switchTab('stocks')">Stocks</button>
-                <button id="credits-tab" class="tab-button px-4 py-2 text-sm font-medium rounded-t-lg" onclick="switchTab('credits')">Credits</button>
-                <button id="debts-tab" class="tab-button px-4 py-2 text-sm font-medium rounded-t-lg" onclick="switchTab('debts')">Debts</button>
-                <button id="budget-tab" class="tab-button px-4 py-2 text-sm font-medium rounded-t-lg" onclick="switchTab('budget')">Budget</button>
-            </div>
-
-            <!-- Dashboard View -->
-            <div id="dashboard-view" class="tab-content grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="card flex flex-col items-center justify-center">
-                    <h2 class="text-xl font-bold mb-2 flex items-center"><i class="fa-solid fa-wallet mr-2"></i>Net Worth</h2>
-                    <div class="text-3xl font-bold" id="net-worth-display">₹ 0</div>
-                    <canvas id="netWorthChart" style="max-width:300px; margin-top:2rem;"></canvas>
-                </div>
-                <div class="card flex flex-col items-center justify-center">
-                    <h2 class="text-xl font-bold mb-2 flex items-center"><i class="fa-solid fa-chart-line mr-2"></i>Stocks Overview</h2>
-                    <canvas id="stocksChart" style="max-width:300px;"></canvas>
-                </div>
-                <div class="card flex flex-col items-center justify-center">
-                    <h2 class="text-xl font-bold mb-2 flex items-center"><i class="fa-solid fa-coins mr-2"></i>Budget Breakdown</h2>
-                    <canvas id="budgetPieChart" style="max-width:300px;"></canvas>
-                </div>
-            </div>
-
-            <!-- Stocks View -->
-            <div id="stocks-view" class="tab-content hidden">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold">Stocks</h2>
-                    <button id="fetch-zerodha-btn" class="bg-indigo-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors duration-200" onclick="onFetchZerodhaClick()">
-                        <div class="flex items-center space-x-2">
-                            <span>Fetch from Zerodha</span>
-                        </div>
-                    </button>
-                </div>
-                <div class="overflow-x-auto bg-gray-900 rounded-xl">
-                    <table class="min-w-full divide-y divide-gray-700">
-                        <thead class="bg-gray-700">
-                            <tr>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Symbol</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Quantity</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Buy Price</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Current Price</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Value</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">P&L</th>
-                            </tr>
-                        </thead>
-                        <tbody id="stocks-table" class="bg-gray-800 divide-y divide-gray-700">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Credits View -->
-            <div id="credits-view" class="tab-content hidden">
-                <h2 class="text-xl font-bold mb-4">Credits</h2>
-                <form id="add-credit-form" class="bg-gray-900 p-6 rounded-xl shadow-inner grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    <input type="text" id="credit-person" placeholder="Person Name" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <input type="number" id="credit-amount" placeholder="Amount (₹)" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <input type="number" id="credit-rate" placeholder="Interest Rate (%)" step="0.01" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <input type="number" id="credit-tenure" placeholder="Tenure (months)" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <button type="submit" class="bg-indigo-600 text-white font-bold py-2 rounded-lg hover:bg-indigo-700 transition-colors duration-200" onclick="onAddCreditSubmit(event)">Add Credit</button>
-                </form>
-                <div class="overflow-x-auto bg-gray-900 rounded-xl">
-                    <table class="min-w-full divide-y divide-gray-700">
-                        <thead class="bg-gray-700">
-                            <tr>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Person</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Principal</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Tenure</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Rate (%)</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Interest</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Total</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="credits-table" class="bg-gray-800 divide-y divide-gray-700">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Debts View -->
-            <div id="debts-view" class="tab-content hidden">
-                <h2 class="text-xl font-bold mb-4">Debts</h2>
-                <form id="add-debt-form" class="bg-gray-900 p-6 rounded-xl shadow-inner grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    <input type="text" id="debt-person" placeholder="Person Name" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <input type="number" id="debt-amount" placeholder="Amount (₹)" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <input type="number" id="debt-rate" placeholder="Interest Rate (%)" step="0.01" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <input type="date" id="debt-date" placeholder="Date" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <button type="submit" class="bg-indigo-600 text-white font-bold py-2 rounded-lg hover:bg-indigo-700 transition-colors duration-200" onclick="onAddDebtSubmit(event)">Add Debt</button>
-                </form>
-                <div class="overflow-x-auto bg-gray-900 rounded-xl">
-                    <table class="min-w-full divide-y divide-gray-700">
-                        <thead class="bg-gray-700">
-                            <tr>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Person</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Principal</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Rate (%)</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Interest</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Total</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="debts-table" class="bg-gray-800 divide-y divide-gray-700">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Budget View -->
-            <div id="budget-view" class="tab-content hidden">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-bold">Monthly Budget Tracker</h2>
-                    <div class="flex items-center space-x-4">
-                        <select id="budget-month-filter" class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        </select>
-                        <select id="budget-year-filter" class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Budget Summary Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                    <div class="bg-gray-900 p-6 rounded-xl shadow-inner">
-                        <h3 class="text-gray-400 text-lg font-medium">Total Inflow</h3>
-                        <p id="total-inflow" class="text-3xl font-bold mt-2 text-green-400">₹0</p>
-                    </div>
-                    <div class="bg-gray-900 p-6 rounded-xl shadow-inner">
-                        <h3 class="text-gray-400 text-lg font-medium">Total Outflow</h3>
-                        <p id="total-outflow" class="text-3xl font-bold mt-2 text-red-400">₹0</p>
-                    </div>
-                    <div class="bg-gray-900 p-6 rounded-xl shadow-inner">
-                        <h3 class="text-gray-400 text-lg font-medium">Net Balance</h3>
-                        <p id="net-balance" class="text-3xl font-bold mt-2 text-blue-400">₹0</p>
-                    </div>
-                </div>
-
-                <!-- Add Transaction Form -->
-                <form id="add-transaction-form" class="bg-gray-900 p-6 rounded-xl shadow-inner grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-                    <select id="transaction-type" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <option value="">Select Type</option>
-                        <option value="inflow">Inflow</option>
-                        <option value="outflow">Outflow</option>
-                    </select>
-                    <select id="transaction-category" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <option value="">Select Category</option>
-                        <optgroup label="Housing">
-                            <option value="Rent">Rent</option>
-                            <option value="Mortgage">Mortgage</option>
-                            <option value="Repairs">Repairs</option>
-                            <option value="Utilities">Utilities</option>
-                        </optgroup>
-                        <optgroup label="Food">
-                            <option value="Groceries">Groceries</option>
-                            <option value="Dining Out">Dining Out</option>
-                            <option value="Snacks">Snacks</option>
-                        </optgroup>
-                        <optgroup label="Transportation">
-                            <option value="Fuel">Fuel</option>
-                            <option value="Public Transport">Public Transport</option>
-                            <option value="Car Maintenance">Car Maintenance</option>
-                        </optgroup>
-                        <optgroup label="Health">
-                            <option value="Medical">Medical</option>
-                            <option value="Insurance">Insurance</option>
-                            <option value="Fitness">Fitness</option>
-                        </optgroup>
-                        <optgroup label="Personal">
-                            <option value="Clothing">Clothing</option>
-                            <option value="Personal Care">Personal Care</option>
-                            <option value="Subscriptions">Subscriptions</option>
-                        </optgroup>
-                        <optgroup label="Savings">
-                            <option value="Emergency Fund">Emergency Fund</option>
-                            <option value="Retirement">Retirement</option>
-                            <option value="Investments">Investments</option>
-                        </optgroup>
-                        <optgroup label="Entertainment">
-                            <option value="Movies">Movies</option>
-                            <option value="Travel">Travel</option>
-                            <option value="Events">Events</option>
-                        </optgroup>
-                        <optgroup label="Children">
-                            <option value="School Fees">School Fees</option>
-                            <option value="Toys">Toys</option>
-                            <option value="Activities">Activities</option>
-                        </optgroup>
-                        <optgroup label="Other">
-                            <option value="Gifts">Gifts</option>
-                            <option value="Charity">Charity</option>
-                            <option value="Miscellaneous">Miscellaneous</option>
-                        </optgroup>
-                    </select>
-                    <input type="number" id="transaction-amount" placeholder="Amount (₹)" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <input type="text" id="transaction-description" placeholder="Description (optional)" class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <button type="submit" class="bg-indigo-600 text-white font-bold py-2 rounded-lg hover:bg-indigo-700 transition-colors duration-200" onclick="onAddTransactionSubmit(event)">Add Transaction</button>
-                </form>
-
-                <!-- Budget Categories Overview -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                    <!-- Inflow Categories -->
-                    <div class="bg-gray-900 p-6 rounded-xl shadow-inner">
-                        <h3 class="text-lg font-bold mb-4 text-green-400">Inflow Categories</h3>
-                        <div id="inflow-categories" class="space-y-3">
-                        </div>
-                    </div>
-                    
-                    <!-- Outflow Categories -->
-                    <div class="bg-gray-900 p-6 rounded-xl shadow-inner">
-                        <h3 class="text-lg font-bold mb-4 text-red-400">Outflow Categories</h3>
-                        <div id="outflow-categories" class="space-y-3">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Transactions Table -->
-                <div class="overflow-x-auto bg-gray-900 rounded-xl">
-                    <table class="min-w-full divide-y divide-gray-700">
-                        <thead class="bg-gray-700">
-                            <tr>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Type</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Category</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Amount</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Description</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="transactions-table" class="bg-gray-800 divide-y divide-gray-700">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+  <!-- Confirm Modal -->
+  <div id="confirm-modal" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 hidden">
+    <div class="card text-center max-w-sm">
+      <h3 class="text-xl font-bold mb-4">Confirm Action</h3>
+      <p id="modal-message" class="text-gray-400 mb-6"></p>
+      <div class="flex justify-center space-x-4">
+        <button id="modal-confirm-btn" onclick="onModalConfirm()" class="btn-primary px-4 py-2">Confirm</button>
+        <button id="modal-cancel-btn" onclick="onModalCancel()" class="btn-primary px-4 py-2">Cancel</button>
+      </div>
     </div>
+  </div>
 
-    <!-- Modal for Confirmations -->
-    <div id="confirm-modal" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 hidden">
-        <div class="modal p-6 shadow-lg w-full max-w-sm text-center">
-            <h3 class="text-xl font-bold mb-4">Confirm Action</h3>
-            <p id="modal-message" class="text-gray-400 mb-6"></p>
-            <div class="flex justify-center space-x-4">
-                <button id="modal-confirm-btn" class="btn-primary px-4 py-2" onclick="onModalConfirm()">Confirm</button>
-                <button id="modal-cancel-btn" class="btn-primary px-4 py-2" onclick="onModalCancel()">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <script type="module" src="./financialTracker.js"></script>
+  <script type="module" src="./financialTracker.js"></script>
 </body>
 </html>
