@@ -6,13 +6,14 @@ import { getAuth, signInAnonymously, onAuthStateChanged, signOut } from "https:/
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // TODO: Replace with your actual Firebase config
-const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+ const firebaseConfig = {
+          apiKey: "AIzaSyB-oqOuVoNJWmpW1KAq8eqEXiQtvYfxSdk",
+          authDomain: "financialtracker-mani.firebaseapp.com",
+          projectId: "financialtracker-mani",
+          storageBucket: "financialtracker-mani.firebasestorage.app",
+          messagingSenderId: "291386637366",
+          appId: "1:291386637366:web:090b26f9652a394cbdec97",
+          measurementId: "G-HF9JZC689P"
 };
 
 const app = initializeApp(firebaseConfig);
