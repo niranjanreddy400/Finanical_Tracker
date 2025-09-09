@@ -187,7 +187,7 @@
                     <input type="text" id="debt-person" placeholder="Person Name" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <input type="number" id="debt-amount" placeholder="Amount (₹)" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <input type="number" id="debt-rate" placeholder="Interest Rate (%)" step="0.01" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <input type="number" id="debt-tenure" placeholder="Tenure (months)" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="date" id="debt-date" placeholder="Date" required class="bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <button type="submit" class="bg-indigo-600 text-white font-bold py-2 rounded-lg hover:bg-indigo-700 transition-colors duration-200">Add Debt</button>
                 </form>
                 <div class="overflow-x-auto bg-gray-900 rounded-xl">
@@ -196,11 +196,10 @@
                             <tr>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Person</th>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Principal</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Tenure</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Rate (%)</th>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Interest</th>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Total</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                             </tr>
@@ -311,168 +310,6 @@
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, getDocs, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-
-        // TODO: Replace with your actual Firebase config
-        const firebaseConfig = {
-            apiKey: "AIzaSyB-oqOuVoNJWmpW1KAq8eqEXiQtvYfxSdk",
-            authDomain: "financialtracker-mani.firebaseapp.com",
-            projectId: "financialtracker-mani",
-            storageBucket: "financialtracker-mani.firebasestorage.app",
-            messagingSenderId: "291386637366",
-            appId: "1:291386637366:web:090b26f9652a394cbdec97",
-            measurementId: "G-HF9JZC689P"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        let userId = null;
-
-        // DOM Elements
-        const loginContainer = document.getElementById('login-container');
-        const appContainer = document.getElementById('app-container');
-        const loginBtn = document.getElementById('login-btn');
-        const logoutBtn = document.getElementById('logout-btn');
-        const userIdDisplay = document.getElementById('user-id-display');
-        const loadingOverlay = document.getElementById('loading-overlay');
-        const dashboardTab = document.getElementById('dashboard-tab');
-        const stocksTab = document.getElementById('stocks-tab');
-        const creditsTab = document.getElementById('credits-tab');
-        const debtsTab = document.getElementById('debts-tab');
-        const budgetTab = document.getElementById('budget-tab');
-        const dashboardView = document.getElementById('dashboard-view');
-        const stocksView = document.getElementById('stocks-view');
-        const creditsView = document.getElementById('credits-view');
-        const debtsView = document.getElementById('debts-view');
-        const budgetView = document.getElementById('budget-view');
-        const confirmModal = document.getElementById('confirm-modal');
-        const modalMessage = document.getElementById('modal-message');
-
-        // Show loading overlay
-        function showLoading(show) {
-            loadingOverlay.classList.toggle('hidden', !show);
-        }
-
-        // Authentication logic
-        onAuthStateChanged(auth, async (user) => {
-            showLoading(false);
-            if (user) {
-                userId = user.uid;
-                userIdDisplay.textContent = `User ID: ${userId}`;
-                loginContainer.classList.add('hidden');
-                appContainer.classList.remove('hidden');
-                setupRealtimeListeners();
-            } else {
-                userId = null;
-                userIdDisplay.textContent = 'User ID: N/A';
-                loginContainer.classList.remove('hidden');
-                appContainer.classList.add('hidden');
-            }
-        });
-
-        loginBtn.addEventListener('click', async () => {
-            showLoading(true);
-            try {
-                await signInAnonymously(auth);
-            } catch (e) {
-                alert('Login failed: ' + e.message);
-                showLoading(false);
-            }
-        });
-
-        logoutBtn.addEventListener('click', async () => {
-            showLoading(true);
-            try {
-                await signOut(auth);
-            } catch (e) {
-                alert('Logout failed: ' + e.message);
-            }
-            showLoading(false);
-        });
-
-        // Modal logic
-        let currentModalAction = null;
-        function showModal(message, onConfirm) {
-            modalMessage.textContent = message;
-            confirmModal.classList.remove('hidden');
-            currentModalAction = onConfirm;
-        }
-        // Modal confirm/cancel buttons
-        document.getElementById('modal-confirm-btn')?.addEventListener('click', () => {
-            confirmModal.classList.add('hidden');
-            if (currentModalAction) currentModalAction();
-        });
-        document.getElementById('modal-cancel-btn')?.addEventListener('click', () => {
-            confirmModal.classList.add('hidden');
-            currentModalAction = null;
-        });
-
-        // Tab navigation
-        const tabs = {
-            dashboard: { btn: dashboardTab, view: dashboardView },
-            stocks: { btn: stocksTab, view: stocksView },
-            credits: { btn: creditsTab, view: creditsView },
-            debts: { btn: debtsTab, view: debtsView },
-            budget: { btn: budgetTab, view: budgetView }
-        };
-        function switchTab(activeTab) {
-            Object.keys(tabs).forEach(tab => {
-                tabs[tab].btn.classList.toggle('active', tab === activeTab);
-                tabs[tab].view.classList.toggle('hidden', tab !== activeTab);
-            });
-        }
-        Object.keys(tabs).forEach(tabName => {
-            tabs[tabName].btn.addEventListener('click', () => switchTab(tabName));
-        });
-        switchTab('dashboard');
-
-        // Realtime listeners (dummy for now)
-        function setupRealtimeListeners() {
-            // Example: Listen to user's credits
-            // onSnapshot(collection(db, 'credits'), (snapshot) => { ... });
-            // You can add listeners for stocks, debts, etc.
-        }
-
-        // Dashboard logic (dummy)
-        function updateDashboard() {
-            dashboardView.innerHTML = `
-                <div class="bg-indigo-600 rounded-xl p-6 shadow text-center">
-                    <h2 class="text-xl font-bold mb-2">Net Worth</h2>
-                    <div class="text-3xl font-bold">₹ 0</div>
-                </div>
-            `;
-        }
-        updateDashboard();
-
-        // Zerodha API fetcher
-        document.getElementById('fetch-zerodha-btn')?.addEventListener('click', async () => {
-            showLoading(true);
-            try {
-                const res = await fetch('http://localhost:5000/api/portfolio');
-                const data = await res.json();
-                if (data.status === 'success') {
-                    stocksView.innerHTML = `<pre>${JSON.stringify(data.data, null, 2)}</pre>`;
-                    switchTab('stocks');
-                } else {
-                    alert('Error: ' + data.message);
-                }
-            } catch (e) {
-                alert('Failed to fetch Zerodha data: ' + e.message);
-            }
-            showLoading(false);
-        });
-
-        // AI Agent button (placeholder)
-        document.getElementById('ai-agent-btn')?.addEventListener('click', async () => {
-            alert('AI Agent feature coming soon!');
-        });
-
-    </script>
+    <script type="module" src="./financialTracker.js"></script>
 </body>
 </html>
