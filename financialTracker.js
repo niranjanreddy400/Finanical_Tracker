@@ -209,12 +209,38 @@ function renderBudgetCategories() {
         </div>`;
 }
 
+// Household budget parent/subcategory logic for summary
+function updateBudgetCategories() {
+    const inflowCategoriesDiv = document.getElementById('inflow-categories');
+    const outflowCategoriesDiv = document.getElementById('outflow-categories');
+    const inflowByCategory = {};
+    const outflowByCategory = {};
+    transactionsData.forEach(tx => {
+        if (tx.type === 'inflow') {
+            if (!inflowByCategory[tx.category]) inflowByCategory[tx.category] = 0;
+            inflowByCategory[tx.category] += tx.amount;
+        } else {
+            if (!outflowByCategory[tx.category]) outflowByCategory[tx.category] = 0;
+            outflowByCategory[tx.category] += tx.amount;
+        }
+    });
+    inflowCategoriesDiv.innerHTML = '';
+    Object.entries(inflowByCategory).forEach(([cat, amt]) => {
+        inflowCategoriesDiv.innerHTML += `<div class='flex justify-between'><span>${cat}</span><span>₹${amt}</span></div>`;
+    });
+    outflowCategoriesDiv.innerHTML = '';
+    Object.entries(outflowByCategory).forEach(([cat, amt]) => {
+        outflowCategoriesDiv.innerHTML += `<div class='flex justify-between'><span>${cat}</span><span>₹${amt}</span></div>`;
+    });
+}
+
 function updateAllViews() {
     renderCredits();
     renderDebts();
     renderStocks();
     renderTransactions();
     renderBudgetCategories();
+    renderDashboardGraphs();
 }
 
 updateAllViews();
@@ -300,3 +326,333 @@ function createMainUI() {
 
 // Call this at the top of your script to build the UI
 createMainUI();
+
+// Event handler functions for HTML onclick attributes
+window.onLoginClick = async function() {
+    showLoading(true);
+    try {
+        await signInAnonymously(auth);
+    } catch (e) {
+        alert('Login failed: ' + e.message);
+        showLoading(false);
+    }
+};
+window.onLogoutClick = async function() {
+    showLoading(true);
+    try {
+        await signOut(auth);
+    } catch (e) {
+        alert('Logout failed: ' + e.message);
+    }
+    showLoading(false);
+};
+window.switchTab = function(tab) {
+    Object.keys(tabs).forEach(t => {
+        tabs[t].btn.classList.toggle('active', t === tab);
+        tabs[t].view.classList.toggle('hidden', t !== tab);
+    });
+};
+window.onFetchZerodhaClick = async function() {
+    showLoading(true);
+    try {
+        const res = await fetch('http://localhost:5000/api/portfolio');
+        const data = await res.json();
+        if (data.status === 'success') {
+            stocksData = data.data;
+            updateStocksTable();
+            switchTab('stocks');
+        } else {
+            alert('Error: ' + data.message);
+        }
+    } catch (e) {
+        alert('Failed to fetch Zerodha data: ' + e.message);
+    }
+    showLoading(false);
+};
+window.onAddCreditSubmit = function(e) {
+    e.preventDefault();
+    const person = document.getElementById('credit-person').value;
+    const amount = parseFloat(document.getElementById('credit-amount').value);
+    const rate = parseFloat(document.getElementById('credit-rate').value);
+    const date = new Date().toISOString().split('T')[0];
+    const interest = amount * rate / 100;
+    const total = amount + interest;
+    creditsData.push({
+        name: person,
+        amount,
+        rate,
+        interest,
+        total,
+        date,
+        status: 'Active'
+    });
+    updateCreditsTable();
+    document.getElementById('add-credit-form').reset();
+};
+window.onAddDebtSubmit = function(e) {
+    e.preventDefault();
+    const person = document.getElementById('debt-person').value;
+    const amount = parseFloat(document.getElementById('debt-amount').value);
+    const rate = parseFloat(document.getElementById('debt-rate').value);
+    const date = document.getElementById('debt-date').value;
+    const interest = amount * rate / 100;
+    const total = amount + interest;
+    debtsData.push({
+        name: person,
+        amount,
+        rate,
+        interest,
+        total,
+        date,
+        status: 'Active'
+    });
+    updateDebtsTable();
+    document.getElementById('add-debt-form').reset();
+};
+window.onAddTransactionSubmit = function(e) {
+    e.preventDefault();
+    const type = document.getElementById('transaction-type').value;
+    const category = document.getElementById('transaction-category').value;
+    const amount = parseFloat(document.getElementById('transaction-amount').value);
+    const description = document.getElementById('transaction-description').value;
+    const date = new Date().toISOString().split('T')[0];
+    transactionsData.push({
+        type,
+        category,
+        amount,
+        description,
+        date
+    });
+    updateTransactionsTable();
+    updateBudgetCategories();
+    document.getElementById('add-transaction-form').reset();
+};
+window.onModalConfirm = function() {
+    confirmModal.classList.add('hidden');
+    if (currentModalAction) currentModalAction();
+};
+window.onModalCancel = function() {
+    confirmModal.classList.add('hidden');
+    currentModalAction = null;
+};
+
+// --- Credits Form Functionality ---
+const addCreditForm = document.getElementById('add-credit-form');
+const creditsTable = document.getElementById('credits-table');
+if (addCreditForm && creditsTable) {
+    addCreditForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const person = document.getElementById('credit-person').value;
+        const amount = parseFloat(document.getElementById('credit-amount').value);
+        const rate = parseFloat(document.getElementById('credit-rate').value);
+        // Tenure replaced with Date
+        const date = new Date().toISOString().split('T')[0];
+        const interest = amount * rate / 100;
+        const total = amount + interest;
+        creditsData.push({
+            name: person,
+            amount,
+            rate,
+            interest,
+            total,
+            date,
+            status: 'Active'
+        });
+        updateCreditsTable();
+        addCreditForm.reset();
+    });
+}
+function updateCreditsTable() {
+    creditsTable.innerHTML = '';
+    creditsData.forEach((credit, idx) => {
+        creditsTable.innerHTML += `
+            <tr>
+                <td class='px-4 py-2'>${credit.name}</td>
+                <td class='px-4 py-2'>₹${credit.amount}</td>
+                <td class='px-4 py-2'>${credit.rate}%</td>
+                <td class='px-4 py-2'>₹${credit.interest}</td>
+                <td class='px-4 py-2'>₹${credit.total}</td>
+                <td class='px-4 py-2'>${credit.date}</td>
+                <td class='px-4 py-2'>${credit.status}</td>
+                <td class='px-4 py-2'><button onclick='removeCredit(${idx})' class='text-red-500'>Delete</button></td>
+            </tr>
+        `;
+    });
+}
+window.removeCredit = function(idx) {
+    creditsData.splice(idx, 1);
+    updateCreditsTable();
+};
+
+// --- Debts Form Functionality ---
+const addDebtForm = document.getElementById('add-debt-form');
+const debtsTable = document.getElementById('debts-table');
+if (addDebtForm && debtsTable) {
+    addDebtForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const person = document.getElementById('debt-person').value;
+        const amount = parseFloat(document.getElementById('debt-amount').value);
+        const rate = parseFloat(document.getElementById('debt-rate').value);
+        const date = document.getElementById('debt-date').value;
+        const interest = amount * rate / 100;
+        const total = amount + interest;
+        debtsData.push({
+            name: person,
+            amount,
+            rate,
+            interest,
+            total,
+            date,
+            status: 'Active'
+        });
+        updateDebtsTable();
+        addDebtForm.reset();
+    });
+}
+function updateDebtsTable() {
+    debtsTable.innerHTML = '';
+    debtsData.forEach((debt, idx) => {
+        debtsTable.innerHTML += `
+            <tr>
+                <td class='px-4 py-2'>${debt.name}</td>
+                <td class='px-4 py-2'>₹${debt.amount}</td>
+                <td class='px-4 py-2'>${debt.date}</td>
+                <td class='px-4 py-2'>${debt.rate}%</td>
+                <td class='px-4 py-2'>₹${debt.interest}</td>
+                <td class='px-4 py-2'>₹${debt.total}</td>
+                <td class='px-4 py-2'>${debt.status}</td>
+                <td class='px-4 py-2'><button onclick='removeDebt(${idx})' class='text-red-500'>Delete</button></td>
+            </tr>
+        `;
+    });
+}
+window.removeDebt = function(idx) {
+    debtsData.splice(idx, 1);
+    updateDebtsTable();
+};
+
+// --- Transactions Form Functionality ---
+const addTransactionForm = document.getElementById('add-transaction-form');
+const transactionsTable = document.getElementById('transactions-table');
+if (addTransactionForm && transactionsTable) {
+    addTransactionForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const type = document.getElementById('transaction-type').value;
+        const category = document.getElementById('transaction-category').value;
+        const amount = parseFloat(document.getElementById('transaction-amount').value);
+        const description = document.getElementById('transaction-description').value;
+        const date = new Date().toISOString().split('T')[0];
+        transactionsData.push({
+            type,
+            category,
+            amount,
+            description,
+            date
+        });
+        updateTransactionsTable();
+        updateBudgetCategories();
+        addTransactionForm.reset();
+    });
+}
+function updateTransactionsTable() {
+    transactionsTable.innerHTML = '';
+    transactionsData.forEach((tx, idx) => {
+        transactionsTable.innerHTML += `
+            <tr>
+                <td class='px-4 py-2'>${tx.date}</td>
+                <td class='px-4 py-2'>${tx.type}</td>
+                <td class='px-4 py-2'>${tx.category}</td>
+                <td class='px-4 py-2'>₹${tx.amount}</td>
+                <td class='px-4 py-2'>${tx.description}</td>
+                <td class='px-4 py-2'><button onclick='removeTransaction(${idx})' class='text-red-500'>Delete</button></td>
+            </tr>
+        `;
+    });
+}
+window.removeTransaction = function(idx) {
+    transactionsData.splice(idx, 1);
+    updateTransactionsTable();
+};
+
+// --- Stocks Table Functionality ---
+const stocksTable = document.getElementById('stocks-table');
+function updateStocksTable() {
+    stocksTable.innerHTML = '';
+    stocksData.forEach((stock, idx) => {
+        const value = stock.quantity * stock.current_price;
+        const pnl = (stock.current_price - stock.buy_price) * stock.quantity;
+        stocksTable.innerHTML += `
+            <tr>
+                <td class='px-4 py-2'>${stock.symbol}</td>
+                <td class='px-4 py-2'>${stock.quantity}</td>
+                <td class='px-4 py-2'>₹${stock.buy_price}</td>
+                <td class='px-4 py-2'>₹${stock.current_price}</td>
+                <td class='px-4 py-2'>₹${value.toFixed(2)}</td>
+                <td class='px-4 py-2'>₹${pnl.toFixed(2)}</td>
+            </tr>
+        `;
+    });
+}
+// Call updateStocksTable after stocksData changes
+
+// --- Initial Table Renders ---
+updateCreditsTable();
+updateDebtsTable();
+updateTransactionsTable();
+updateStocksTable();
+
+function renderDashboardGraphs() {
+    // Net Worth Bar Chart
+    const ctxNetWorth = document.getElementById('netWorthChart').getContext('2d');
+    new Chart(ctxNetWorth, {
+        type: 'bar',
+        data: {
+            labels: ['Stocks', 'Credits', 'Debts'],
+            datasets: [{
+                label: 'Value',
+                data: [
+                    stocksData.reduce((a,s)=>a+s.current_price*s.quantity,0),
+                    creditsData.reduce((a,c)=>a+c.amount,0),
+                    debtsData.reduce((a,d)=>a+d.amount,0)
+                ],
+                backgroundColor: ['#e50914', '#00ffb0', '#1fa2ff']
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+    // Stocks Pie Chart
+    const ctxStocks = document.getElementById('stocksChart').getContext('2d');
+    new Chart(ctxStocks, {
+        type: 'pie',
+        data: {
+            labels: stocksData.map(s=>s.symbol),
+            datasets: [{
+                data: stocksData.map(s=>s.current_price*s.quantity),
+                backgroundColor: ['#e50914', '#00ffb0', '#1fa2ff', '#f9d923', '#ff2e63', '#08d9d6']
+            }]
+        },
+        options: {
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+    // Budget Pie Chart
+    const ctxBudget = document.getElementById('budgetPieChart').getContext('2d');
+    const inflow = creditsData.reduce((a,c)=>a+c.amount,0);
+    const outflow = transactionsData.filter(t=>t.type==='outflow').reduce((a,t)=>a+t.amount,0);
+    new Chart(ctxBudget, {
+        type: 'doughnut',
+        data: {
+            labels: ['Inflow', 'Outflow'],
+            datasets: [{
+                data: [inflow, outflow],
+                backgroundColor: ['#00ffb0', '#e50914']
+            }]
+        },
+        options: {
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+}
