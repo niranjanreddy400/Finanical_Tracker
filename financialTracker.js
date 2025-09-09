@@ -463,6 +463,11 @@ if (addCreditForm && creditsTable) {
     });
 }
 function updateCreditsTable() {
+    const creditsTable = document.getElementById('credits-table');
+    if (!creditsTable) {
+        console.warn('credits-table element not found in DOM');
+        return;
+    }
     creditsTable.innerHTML = '';
     creditsData.forEach((credit, idx) => {
         creditsTable.innerHTML += `
