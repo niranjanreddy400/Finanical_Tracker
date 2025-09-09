@@ -515,6 +515,11 @@ if (addDebtForm && debtsTable) {
     });
 }
 function updateDebtsTable() {
+    const debtsTable = document.getElementById('debts-table');
+    if (!debtsTable) {
+        console.warn('debts-table element not found in DOM');
+        return;
+    }
     debtsTable.innerHTML = '';
     debtsData.forEach((debt, idx) => {
         debtsTable.innerHTML += `
@@ -560,6 +565,11 @@ if (addTransactionForm && transactionsTable) {
     });
 }
 function updateTransactionsTable() {
+    const transactionsTable = document.getElementById('transactions-table');
+    if (!transactionsTable) {
+        console.warn('transactions-table element not found in DOM');
+        return;
+    }
     transactionsTable.innerHTML = '';
     transactionsData.forEach((tx, idx) => {
         transactionsTable.innerHTML += `
@@ -582,6 +592,11 @@ window.removeTransaction = function(idx) {
 // --- Stocks Table Functionality ---
 const stocksTable = document.getElementById('stocks-table');
 function updateStocksTable() {
+    const stocksTable = document.getElementById('stocks-table');
+    if (!stocksTable) {
+        console.warn('stocks-table element not found in DOM');
+        return;
+    }
     stocksTable.innerHTML = '';
     stocksData.forEach((stock, idx) => {
         const value = stock.quantity * stock.current_price;
