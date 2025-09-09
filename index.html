@@ -7,15 +7,66 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #6366F1 0%, #EC4899 100%);
+        }
+        .bg-gray-800 {
+            background: linear-gradient(135deg, #1e293b 60%, #6366F1 100%);
+        }
+        .bg-gray-900 {
+            background: linear-gradient(135deg, #0f172a 60%, #EC4899 100%);
+        }
         .tab-button {
             transition: all 0.3s ease;
+            background: linear-gradient(90deg, #6366F1 0%, #EC4899 100%);
+            color: #fff;
+            margin-right: 0.5rem;
+            box-shadow: 0 2px 8px rgba(99,102,241,0.15);
         }
         .tab-button.active {
-            border-bottom: 3px solid #6366F1;
-            color: #6366F1;
-            font-weight: 600;
+            border-bottom: 3px solid #EC4899;
+            color: #EC4899;
+            font-weight: 700;
+            background: #fff;
         }
+        .rounded-2xl, .rounded-xl, .rounded-lg {
+            border-radius: 1.5rem !important;
+        }
+        .shadow-lg, .shadow {
+            box-shadow: 0 8px 32px rgba(236,72,153,0.15), 0 1.5px 8px rgba(99,102,241,0.10);
+        }
+        .card {
+            background: linear-gradient(135deg, #fff 60%, #6366F1 100%);
+            color: #1e293b;
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px rgba(236,72,153,0.15);
+            padding: 2rem;
+            margin-bottom: 1rem;
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #6366F1 0%, #EC4899 100%);
+            color: #fff;
+            font-weight: 600;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(99,102,241,0.15);
+            transition: background 0.3s;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #EC4899 0%, #6366F1 100%);
+        }
+        .text-indigo-500 {
+            color: #EC4899 !important;
+        }
+        .text-3xl {
+            color: #6366F1;
+        }
+        .modal {
+            background: linear-gradient(135deg, #fff 60%, #EC4899 100%);
+            color: #1e293b;
+            border-radius: 1.5rem;
+        }
+        /* Add more custom styles for tables, forms, etc. as needed */
     </style>
 </head>
 <body class="bg-gray-900 text-white min-h-screen flex items-center justify-center p-4">
@@ -27,10 +78,10 @@
 
     <!-- Login Page -->
     <div id="login-container" class="bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-sm hidden">
-        <h2 class="text-3xl font-bold text-center mb-6 text-gray-100">Login</h2>
+        <h2 class="text-3xl font-bold text-center mb-6 text-indigo-500">Login</h2>
         <p class="text-center text-gray-400 mb-6">Sign in to access your dashboard</p>
         <div class="space-y-4">
-            <button id="login-btn" class="w-full bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors duration-200">
+            <button id="login-btn" class="btn-primary w-full py-3 px-6">
                 Sign in Anonymously
             </button>
         </div>
@@ -45,68 +96,26 @@
             <h1 class="text-2xl font-bold text-indigo-500">My Financial Dashboard</h1>
             <div class="flex items-center space-x-4">
                 <span id="user-id-display" class="bg-gray-700 text-gray-300 text-xs px-3 py-1 rounded-full truncate max-w-xs">User ID: N/A</span>
-                <button id="logout-btn" class="text-gray-400 hover:text-white transition-colors duration-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                </button>
+                <button id="logout-btn" class="btn-primary px-4 py-2">Logout</button>
             </div>
         </div>
 
         <!-- Tab Navigation -->
         <div class="flex-grow flex flex-col p-6 space-y-4">
             <div class="flex space-x-2 border-b-2 border-gray-700">
-                <button id="dashboard-tab" class="tab-button px-4 py-2 text-sm font-medium text-gray-400 rounded-t-lg active">Dashboard</button>
-                <button id="stocks-tab" class="tab-button px-4 py-2 text-sm font-medium text-gray-400 rounded-t-lg">Stocks</button>
-                <button id="credits-tab" class="tab-button px-4 py-2 text-sm font-medium text-gray-400 rounded-t-lg">Credits</button>
-                <button id="debts-tab" class="tab-button px-4 py-2 text-sm font-medium text-gray-400 rounded-t-lg">Debts</button>
-                <button id="budget-tab" class="tab-button px-4 py-2 text-sm font-medium text-gray-400 rounded-t-lg">Budget</button>
+                <button id="dashboard-tab" class="tab-button px-4 py-2 text-sm font-medium rounded-t-lg active">Dashboard</button>
+                <button id="stocks-tab" class="tab-button px-4 py-2 text-sm font-medium rounded-t-lg">Stocks</button>
+                <button id="credits-tab" class="tab-button px-4 py-2 text-sm font-medium rounded-t-lg">Credits</button>
+                <button id="debts-tab" class="tab-button px-4 py-2 text-sm font-medium rounded-t-lg">Debts</button>
+                <button id="budget-tab" class="tab-button px-4 py-2 text-sm font-medium rounded-t-lg">Budget</button>
             </div>
 
             <!-- Dashboard View -->
             <div id="dashboard-view" class="tab-content grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Net Worth Card -->
-                <div class="bg-gray-900 p-6 rounded-xl shadow-inner col-span-1 md:col-span-2 lg:col-span-1">
-                    <h3 class="text-gray-400 text-lg font-medium">Net Worth</h3>
-                    <p id="net-worth" class="text-4xl font-bold mt-2 text-green-500">₹0</p>
-                    <p class="text-sm text-gray-500">Total assets minus total liabilities</p>
-                </div>
-                <!-- Total Stocks Card -->
-                <div class="bg-gray-900 p-6 rounded-xl shadow-inner">
-                    <h3 class="text-gray-400 text-lg font-medium">Total Stocks</h3>
-                    <p id="total-stocks" class="text-3xl font-bold mt-2 text-indigo-400">₹0</p>
-                </div>
-                <!-- Total Credits Card -->
-                <div class="bg-gray-900 p-6 rounded-xl shadow-inner">
-                    <h3 class="text-gray-400 text-lg font-medium">Total Credits</h3>
-                    <p id="total-credits" class="text-3xl font-bold mt-2 text-cyan-400">₹0</p>
-                </div>
-                <!-- Total Debts Card -->
-                <div class="bg-gray-900 p-6 rounded-xl shadow-inner">
-                    <h3 class="text-gray-400 text-lg font-medium">Total Debts</h3>
-                    <p id="total-debts" class="text-3xl font-bold mt-2 text-rose-400">₹0</p>
-                </div>
-
-                <!-- Financial Health Charts -->
-                <div class="md:col-span-2 lg:col-span-2 bg-gray-900 p-6 rounded-xl shadow-inner flex flex-col items-center">
-                    <h3 class="text-gray-400 text-lg font-medium mb-4">Financial Composition</h3>
-                    <div id="bar-chart-container" class="w-full flex justify-center items-end h-64 relative">
-                        <!-- Bar chart rendered here by JS -->
-                    </div>
-                </div>
-
-                <!-- AI Agent Button -->
-                <div class="md:col-span-2 lg:col-span-1 bg-gray-900 p-6 rounded-xl shadow-inner flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-gray-400 text-lg font-medium">AI Financial Agent</h3>
-                        <p class="text-sm text-gray-500 mt-1">Get personalized alerts and insights based on your finances.</p>
-                    </div>
-                    <button id="ai-agent-btn" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors duration-200 mt-4">
-                        Get Financial Insights
-                    </button>
-                    <div id="ai-alerts-container" class="mt-4 p-3 bg-gray-700 rounded-lg max-h-40 overflow-y-auto hidden">
-                        <p id="ai-alerts-text" class="text-sm text-gray-300 italic"></p>
-                    </div>
+                <div class="card">
+                    <h2 class="text-xl font-bold mb-2">Net Worth</h2>
+                    <div class="text-3xl font-bold">₹ 0</div>
                 </div>
             </div>
 
@@ -292,12 +301,12 @@
 
     <!-- Modal for Confirmations -->
     <div id="confirm-modal" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 hidden">
-        <div class="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-sm text-center">
+        <div class="modal p-6 shadow-lg w-full max-w-sm text-center">
             <h3 class="text-xl font-bold mb-4">Confirm Action</h3>
             <p id="modal-message" class="text-gray-400 mb-6"></p>
             <div class="flex justify-center space-x-4">
-                <button id="modal-cancel-btn" class="bg-gray-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200">Cancel</button>
-                <button id="modal-confirm-btn" class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors duration-200">Confirm</button>
+                <button id="modal-confirm-btn" class="btn-primary px-4 py-2">Confirm</button>
+                <button id="modal-cancel-btn" class="btn-primary px-4 py-2">Cancel</button>
             </div>
         </div>
     </div>
@@ -308,44 +317,30 @@
         import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, getDocs, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-        // IMPORTANT: PASTE YOUR FIREBASE CONFIG HERE
-        // It's crucial for the app to connect to your database.
-       // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        // TODO: Replace with your actual Firebase config
         const firebaseConfig = {
-          apiKey: "AIzaSyB-oqOuVoNJWmpW1KAq8eqEXiQtvYfxSdk",
-          authDomain: "financialtracker-mani.firebaseapp.com",
-          projectId: "financialtracker-mani",
-          storageBucket: "financialtracker-mani.firebasestorage.app",
-          messagingSenderId: "291386637366",
-          appId: "1:291386637366:web:090b26f9652a394cbdec97",
-          measurementId: "G-HF9JZC689P"
+            apiKey: "AIzaSyB-oqOuVoNJWmpW1KAq8eqEXiQtvYfxSdk",
+            authDomain: "financialtracker-mani.firebaseapp.com",
+            projectId: "financialtracker-mani",
+            storageBucket: "financialtracker-mani.firebasestorage.app",
+            messagingSenderId: "291386637366",
+            appId: "1:291386637366:web:090b26f9652a394cbdec97",
+            measurementId: "G-HF9JZC689P"
         };
-        // Replace the above object with your actual Firebase config.
 
-        // Initialize Firebase services
-        let app, auth, db, userId;
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        let userId = null;
 
-        const appId = 'default-app-id';
-
-        try {
-            app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app);
-        } catch (e) {
-            console.error("Firebase config is not available. Please ensure the app is configured correctly.", e);
-        }
-
+        // DOM Elements
         const loginContainer = document.getElementById('login-container');
         const appContainer = document.getElementById('app-container');
         const loginBtn = document.getElementById('login-btn');
         const logoutBtn = document.getElementById('logout-btn');
         const userIdDisplay = document.getElementById('user-id-display');
         const loadingOverlay = document.getElementById('loading-overlay');
-        const addCreditForm = document.getElementById('add-credit-form');
-        const addDebtForm = document.getElementById('add-debt-form');
-        const creditsTable = document.getElementById('credits-table');
-        const debtsTable = document.getElementById('debts-table');
-        const stocksTable = document.getElementById('stocks-table');
         const dashboardTab = document.getElementById('dashboard-tab');
         const stocksTab = document.getElementById('stocks-tab');
         const creditsTab = document.getElementById('credits-tab');
@@ -356,714 +351,126 @@
         const creditsView = document.getElementById('credits-view');
         const debtsView = document.getElementById('debts-view');
         const budgetView = document.getElementById('budget-view');
-        const netWorthDisplay = document.getElementById('net-worth');
-        const totalStocksDisplay = document.getElementById('total-stocks');
-        const totalCreditsDisplay = document.getElementById('total-credits');
-        const totalDebtsDisplay = document.getElementById('total-debts');
-        const barChartContainer = document.getElementById('bar-chart-container');
-        const fetchZerodhaBtn = document.getElementById('fetch-zerodha-btn');
-        const aiAgentBtn = document.getElementById('ai-agent-btn');
-        const aiAlertsContainer = document.getElementById('ai-alerts-container');
-        const aiAlertsText = document.getElementById('ai-alerts-text');
         const confirmModal = document.getElementById('confirm-modal');
         const modalMessage = document.getElementById('modal-message');
-        const modalConfirmBtn = document.getElementById('modal-confirm-btn');
-        const modalCancelBtn = document.getElementById('modal-cancel-btn');
-        const addTransactionForm = document.getElementById('add-transaction-form');
-        const transactionType = document.getElementById('transaction-type');
-        const transactionCategory = document.getElementById('transaction-category');
-        const transactionsTable = document.getElementById('transactions-table');
-        const budgetMonthFilter = document.getElementById('budget-month-filter');
-        const budgetYearFilter = document.getElementById('budget-year-filter');
-        const totalInflowDisplay = document.getElementById('total-inflow');
-        const totalOutflowDisplay = document.getElementById('total-outflow');
-        const netBalanceDisplay = document.getElementById('net-balance');
-        const inflowCategoriesDiv = document.getElementById('inflow-categories');
-        const outflowCategoriesDiv = document.getElementById('outflow-categories');
 
-        let totalStocks = 0;
-        let totalCredits = 0;
-        let totalDebts = 0;
-        let creditsData = [];
-        let debtsData = [];
-        let stocksData = [];
-        let transactionsData = [];
-        let currentMonth = new Date().getMonth();
-        let currentYear = new Date().getFullYear();
+        // Show loading overlay
+        function showLoading(show) {
+            loadingOverlay.classList.toggle('hidden', !show);
+        }
 
-        // Budget Categories
-        const budgetCategories = {
-            inflow: [
-                'Salary',
-                'Freelance',
-                'Business Income',
-                'Investment Returns',
-                'Rental Income',
-                'Bonus',
-                'Gift/Inheritance',
-                'Other Income'
-            ],
-            outflow: [
-                'EMI',
-                'Rent',
-                'Grocery',
-                'Travel',
-                'Loan EMI',
-                'Grooming',
-                'Shopping',
-                'Utilities',
-                'Insurance',
-                'Healthcare',
-                'Education',
-                'Entertainment',
-                'Food & Dining',
-                'Transportation',
-                'Subscriptions',
-                'Charity',
-                'Other Expenses'
-            ]
-        };
-
-        // Firebase Authentication
+        // Authentication logic
         onAuthStateChanged(auth, async (user) => {
+            showLoading(false);
             if (user) {
                 userId = user.uid;
                 userIdDisplay.textContent = `User ID: ${userId}`;
                 loginContainer.classList.add('hidden');
                 appContainer.classList.remove('hidden');
-                
-                // Initialize listeners for all data
                 setupRealtimeListeners();
             } else {
                 userId = null;
+                userIdDisplay.textContent = 'User ID: N/A';
                 loginContainer.classList.remove('hidden');
                 appContainer.classList.add('hidden');
             }
         });
 
         loginBtn.addEventListener('click', async () => {
+            showLoading(true);
             try {
                 await signInAnonymously(auth);
-            } catch (error) {
-                console.error("Sign-in failed:", error);
-                alert("Sign-in failed. Please try again.");
+            } catch (e) {
+                alert('Login failed: ' + e.message);
+                showLoading(false);
             }
         });
 
         logoutBtn.addEventListener('click', async () => {
+            showLoading(true);
             try {
                 await signOut(auth);
-            } catch (error) {
-                console.error("Sign-out failed:", error);
+            } catch (e) {
+                alert('Logout failed: ' + e.message);
             }
+            showLoading(false);
         });
-        
+
         // Modal logic
-        let currentModalAction;
-        const showModal = (message, onConfirm) => {
+        let currentModalAction = null;
+        function showModal(message, onConfirm) {
             modalMessage.textContent = message;
-            currentModalAction = onConfirm;
             confirmModal.classList.remove('hidden');
-        };
-
-        modalConfirmBtn.addEventListener('click', () => {
-            if (currentModalAction) {
-                currentModalAction();
-            }
+            currentModalAction = onConfirm;
+        }
+        // Modal confirm/cancel buttons
+        document.getElementById('modal-confirm-btn')?.addEventListener('click', () => {
             confirmModal.classList.add('hidden');
+            if (currentModalAction) currentModalAction();
         });
-
-        modalCancelBtn.addEventListener('click', () => {
+        document.getElementById('modal-cancel-btn')?.addEventListener('click', () => {
             confirmModal.classList.add('hidden');
             currentModalAction = null;
         });
 
-        // Tab Switching
+        // Tab navigation
         const tabs = {
-            'dashboard': { btn: dashboardTab, view: dashboardView },
-            'stocks': { btn: stocksTab, view: stocksView },
-            'credits': { btn: creditsTab, view: creditsView },
-            'debts': { btn: debtsTab, view: debtsView },
-            'budget': { btn: budgetTab, view: budgetView }
+            dashboard: { btn: dashboardTab, view: dashboardView },
+            stocks: { btn: stocksTab, view: stocksView },
+            credits: { btn: creditsTab, view: creditsView },
+            debts: { btn: debtsTab, view: debtsView },
+            budget: { btn: budgetTab, view: budgetView }
         };
-
-        const switchTab = (activeTab) => {
-            for (const tab in tabs) {
-                tabs[tab].btn.classList.remove('active');
-                tabs[tab].view.classList.add('hidden');
-            }
-            tabs[activeTab].btn.classList.add('active');
-            tabs[activeTab].view.classList.remove('hidden');
-        };
-
+        function switchTab(activeTab) {
+            Object.keys(tabs).forEach(tab => {
+                tabs[tab].btn.classList.toggle('active', tab === activeTab);
+                tabs[tab].view.classList.toggle('hidden', tab !== activeTab);
+            });
+        }
         Object.keys(tabs).forEach(tabName => {
             tabs[tabName].btn.addEventListener('click', () => switchTab(tabName));
         });
+        switchTab('dashboard');
 
-        // Initialize budget filters and categories
-        initializeBudgetFilters();
-        initializeBudgetCategories();
-
-        // Realtime Database Listeners
+        // Realtime listeners (dummy for now)
         function setupRealtimeListeners() {
-            if (!db || !userId) {
-                console.error("Database or User ID not available.");
-                return;
-            }
-
-            const creditsColRef = collection(db, `/artifacts/${appId}/users/${userId}/credits`);
-            onSnapshot(creditsColRef, (snapshot) => {
-                creditsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                updateCreditsTable(creditsData);
-                updateDashboard();
-            });
-
-            const debtsColRef = collection(db, `/artifacts/${appId}/users/${userId}/debts`);
-            onSnapshot(debtsColRef, (snapshot) => {
-                debtsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                updateDebtsTable(debtsData);
-                updateDashboard();
-            });
-
-            const stocksColRef = collection(db, `/artifacts/${appId}/users/${userId}/stocks`);
-            onSnapshot(stocksColRef, (snapshot) => {
-                stocksData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                updateStocksTable(stocksData);
-                updateDashboard();
-            });
-
-            const transactionsColRef = collection(db, `/artifacts/${appId}/users/${userId}/transactions`);
-            onSnapshot(transactionsColRef, (snapshot) => {
-                transactionsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                updateTransactionsTable();
-                updateBudgetSummary();
-            });
+            // Example: Listen to user's credits
+            // onSnapshot(collection(db, 'credits'), (snapshot) => { ... });
+            // You can add listeners for stocks, debts, etc.
         }
 
-        function calculateInterest(principal, rate, tenure, startDate) {
-            const today = new Date();
-            const dateGiven = startDate.seconds ? new Date(startDate.seconds * 1000) : new Date(startDate);
-            const monthsPassed = Math.min(
-                Math.ceil((today - dateGiven) / (1000 * 60 * 60 * 24 * 30)),
-                tenure
-            );
-            
-            // Simple interest calculation: P * R * T / 100
-            const timeInYears = monthsPassed / 12;
-            return principal * rate * timeInYears / 100;
-        }
-
-        // Dashboard Logic
+        // Dashboard logic (dummy)
         function updateDashboard() {
-            totalStocks = 0;
-            totalCredits = 0;
-            totalDebts = 0;
-            
-            // Calculate from data arrays instead of DOM
-            stocksData.forEach(stock => {
-                const currentValue = stock.quantity * stock.current_price;
-                totalStocks += currentValue;
-            });
-            
-            creditsData.forEach(credit => {
-                if (!credit.isPaid) {
-                    const interest = calculateInterest(credit.amount, credit.rate, credit.tenure, credit.createdAt);
-                    const total = credit.amount + interest;
-                    totalCredits += total;
-                }
-            });
-            
-            debtsData.forEach(debt => {
-                if (!debt.isPaid) {
-                    const interest = calculateInterest(debt.amount, debt.rate, debt.tenure, debt.createdAt);
-                    const total = debt.amount + interest;
-                    totalDebts += total;
-                }
-            });
-
-            const netWorth = totalStocks + totalCredits - totalDebts;
-            netWorthDisplay.textContent = `₹${netWorth.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
-            totalStocksDisplay.textContent = `₹${totalStocks.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
-            totalCreditsDisplay.textContent = `₹${totalCredits.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
-            totalDebtsDisplay.textContent = `₹${totalDebts.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
-            updateBarChart();
+            dashboardView.innerHTML = `
+                <div class="bg-indigo-600 rounded-xl p-6 shadow text-center">
+                    <h2 class="text-xl font-bold mb-2">Net Worth</h2>
+                    <div class="text-3xl font-bold">₹ 0</div>
+                </div>
+            `;
         }
+        updateDashboard();
 
-        function updateBarChart() {
-            const chartData = [
-                { label: 'Stocks', value: totalStocks, color: '#4F46E5' },
-                { label: 'Credits', value: totalCredits, color: '#06B6D4' },
-                { label: 'Debts', value: totalDebts, color: '#F43F5E' }
-            ];
-
-            const maxValue = Math.max(...chartData.map(item => item.value), 1);
-            barChartContainer.innerHTML = ''; // Clear existing chart
-
-            chartData.forEach(item => {
-                const barWrapper = document.createElement('div');
-                barWrapper.className = 'flex flex-col items-center mx-2';
-                barChartContainer.appendChild(barWrapper);
-
-                const barHeight = (item.value / maxValue) * 100;
-                const bar = document.createElement('div');
-                bar.className = `w-12 rounded-lg transition-all duration-500 ease-in-out`;
-                bar.style.backgroundColor = item.color;
-                bar.style.height = `${barHeight}px`;
-
-                const label = document.createElement('div');
-                label.className = 'mt-2 text-xs text-gray-400';
-                label.textContent = item.label;
-
-                const value = document.createElement('div');
-                value.className = 'text-sm font-bold mt-1';
-                value.textContent = `₹${Math.round(item.value).toLocaleString()}`;
-
-                barWrapper.appendChild(bar);
-                barWrapper.appendChild(value);
-                barWrapper.appendChild(label);
-            });
-        }
-
-        // Table updates
-        function updateCreditsTable(credits) {
-            creditsTable.innerHTML = '';
-            credits.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
-            credits.forEach(item => {
-                const interest = calculateInterest(item.amount, item.rate, item.tenure, item.createdAt);
-                const total = item.amount + interest;
-                const status = item.isPaid ? 'Paid' : 'Pending';
-                const statusClass = item.isPaid ? 'text-green-400' : 'text-yellow-400';
-                const row = `
-                    <tr class="${item.isPaid ? 'opacity-60' : ''}">
-                        <td class="px-4 py-2 whitespace-nowrap">${item.person}</td>
-                        <td class="px-4 py-2 whitespace-nowrap">₹${item.amount.toLocaleString('en-IN')}</td>
-                        <td class="px-4 py-2 whitespace-nowrap">${item.tenure} months</td>
-                        <td class="px-4 py-2 whitespace-nowrap">${item.rate}%</td>
-                        <td class="px-4 py-2 whitespace-nowrap">₹${interest.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</td>
-                        <td class="px-4 py-2 whitespace-nowrap">₹${total.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</td>
-                        <td class="px-4 py-2 whitespace-nowrap">${item.createdAt.toDate().toLocaleDateString()}</td>
-                        <td class="px-4 py-2 whitespace-nowrap ${statusClass}">${status}</td>
-                        <td class="px-4 py-2 whitespace-nowrap">
-                            ${!item.isPaid ? `<button data-id="${item.id}" class="mark-credit-paid-btn text-green-500 hover:text-green-700 mr-2">Mark Paid</button>` : ''}
-                            <button data-id="${item.id}" class="delete-credit-btn text-red-500 hover:text-red-700">Delete</button>
-                        </td>
-                    </tr>
-                `;
-                creditsTable.innerHTML += row;
-            });
-
-            document.querySelectorAll('.mark-credit-paid-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    const id = e.target.dataset.id;
-                    showModal('Are you sure you want to mark this credit as paid?', async () => {
-                        await updateDoc(doc(db, `/artifacts/${appId}/users/${userId}/credits`, id), { 
-                            isPaid: true,
-                            paidAt: serverTimestamp()
-                        });
-                    });
-                });
-            });
-
-            document.querySelectorAll('.delete-credit-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    const id = e.target.dataset.id;
-                    showModal('Are you sure you want to delete this credit?', async () => {
-                        await deleteDoc(doc(db, `/artifacts/${appId}/users/${userId}/credits`, id));
-                    });
-                });
-            });
-        }
-
-        function updateDebtsTable(debts) {
-            debtsTable.innerHTML = '';
-            debts.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
-            debts.forEach(item => {
-                const interest = calculateInterest(item.amount, item.rate, item.tenure, item.createdAt);
-                const total = item.amount + interest;
-                const status = item.isPaid ? 'Paid' : 'Pending';
-                const statusClass = item.isPaid ? 'text-green-400' : 'text-red-400';
-                const row = `
-                    <tr class="${item.isPaid ? 'opacity-60' : ''}">
-                        <td class="px-4 py-2 whitespace-nowrap">${item.person}</td>
-                        <td class="px-4 py-2 whitespace-nowrap">₹${item.amount.toLocaleString('en-IN')}</td>
-                        <td class="px-4 py-2 whitespace-nowrap">${item.tenure} months</td>
-                        <td class="px-4 py-2 whitespace-nowrap">${item.rate}%</td>
-                        <td class="px-4 py-2 whitespace-nowrap">₹${interest.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</td>
-                        <td class="px-4 py-2 whitespace-nowrap">₹${total.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</td>
-                        <td class="px-4 py-2 whitespace-nowrap">${item.createdAt.toDate().toLocaleDateString()}</td>
-                        <td class="px-4 py-2 whitespace-nowrap ${statusClass}">${status}</td>
-                        <td class="px-4 py-2 whitespace-nowrap">
-                            ${!item.isPaid ? `<button data-id="${item.id}" data-person="${item.person}" data-amount="${item.amount}" class="mark-paid-btn text-green-500 hover:text-green-700 ml-2">Mark Paid</button>` : ''}
-                            <button data-id="${item.id}" class="delete-debt-btn text-red-500 hover:text-red-700 ml-2">Delete</button>
-                        </td>
-                    </tr>
-                `;
-                debtsTable.innerHTML += row;
-            });
-
-            document.querySelectorAll('.delete-debt-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    const id = e.target.dataset.id;
-                    showModal('Are you sure you want to delete this debt?', async () => {
-                        await deleteDoc(doc(db, `/artifacts/${appId}/users/${userId}/debts`, id));
-                    });
-                });
-            });
-
-            document.querySelectorAll('.mark-paid-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    const id = e.target.dataset.id;
-                    const person = e.target.dataset.person;
-                    const amount = parseFloat(e.target.dataset.amount);
-
-                    showModal('Are you sure you want to mark this debt as paid? This will also update the corresponding credit.', async () => {
-                        const batch = writeBatch(db);
-                        const debtRef = doc(db, `/artifacts/${appId}/users/${userId}/debts`, id);
-                        batch.update(debtRef, { 
-                            isPaid: true,
-                            paidAt: serverTimestamp()
-                        });
-                        
-                        const creditsRef = collection(db, `/artifacts/${appId}/users/${userId}/credits`);
-                        const q = query(creditsRef, where("person", "==", person), where("amount", "==", amount), where("isPaid", "==", false));
-                        const creditsSnapshot = await getDocs(q);
-
-                        if (!creditsSnapshot.empty) {
-                            creditsSnapshot.forEach(doc => {
-                                batch.update(doc.ref, { 
-                                    isPaid: true,
-                                    paidAt: serverTimestamp()
-                                });
-                            });
-                        }
-                        await batch.commit();
-                    });
-                });
-            });
-        }
-
-        function updateStocksTable(stocks) {
-            stocksTable.innerHTML = '';
-            stocks.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
-            stocks.forEach(item => {
-                const currentValue = item.quantity * item.current_price;
-                const cost = item.quantity * item.buy_price;
-                const pnl = currentValue - cost;
-                const pnlClass = pnl >= 0 ? 'text-green-400' : 'text-red-400';
-                const row = `
-                    <tr>
-                        <td class="px-4 py-2 whitespace-nowrap">${item.symbol}</td>
-                        <td class="px-4 py-2 whitespace-nowrap">${item.quantity}</td>
-                        <td class="px-4 py-2 whitespace-nowrap">₹${item.buy_price.toLocaleString('en-IN')}</td>
-                        <td class="px-4 py-2 whitespace-nowrap">₹${item.current_price.toLocaleString('en-IN')}</td>
-                        <td class="px-4 py-2 whitespace-nowrap">₹${currentValue.toLocaleString('en-IN')}</td>
-                        <td class="px-4 py-2 whitespace-nowrap ${pnlClass}">₹${pnl.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</td>
-                    </tr>
-                `;
-                stocksTable.innerHTML += row;
-            });
-        }
-
-        // Form Submission Handlers
-        addCreditForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const person = document.getElementById('credit-person').value;
-            const amount = parseFloat(document.getElementById('credit-amount').value);
-            const rate = parseFloat(document.getElementById('credit-rate').value);
-            const tenure = parseInt(document.getElementById('credit-tenure').value);
-            
-            if (person && amount > 0 && rate >= 0 && tenure > 0) {
-                const creditsColRef = collection(db, `/artifacts/${appId}/users/${userId}/credits`);
-                await addDoc(creditsColRef, {
-                    person,
-                    amount,
-                    rate,
-                    tenure,
-                    isPaid: false,
-                    createdAt: serverTimestamp()
-                });
-                addCreditForm.reset();
-            } else {
-                alert('Please fill all fields with valid values');
-            }
-        });
-
-        addDebtForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const person = document.getElementById('debt-person').value;
-            const amount = parseFloat(document.getElementById('debt-amount').value);
-            const rate = parseFloat(document.getElementById('debt-rate').value);
-            const tenure = parseInt(document.getElementById('debt-tenure').value);
-
-            if (person && amount > 0 && rate >= 0 && tenure > 0) {
-                const debtsColRef = collection(db, `/artifacts/${appId}/users/${userId}/debts`);
-                await addDoc(debtsColRef, {
-                    person,
-                    amount,
-                    rate,
-                    tenure,
-                    isPaid: false,
-                    createdAt: serverTimestamp()
-                });
-                addDebtForm.reset();
-            } else {
-                alert('Please fill all fields with valid values');
-            }
-        });
-
-        // Budget Functions
-        function initializeBudgetFilters() {
-            const months = [
-                'January', 'February', 'March', 'April', 'May', 'June',
-                'July', 'August', 'September', 'October', 'November', 'December'
-            ];
-            
-            budgetMonthFilter.innerHTML = '';
-            months.forEach((month, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = month;
-                option.selected = index === currentMonth;
-                budgetMonthFilter.appendChild(option);
-            });
-
-            budgetYearFilter.innerHTML = '';
-            for (let year = currentYear - 2; year <= currentYear + 1; year++) {
-                const option = document.createElement('option');
-                option.value = year;
-                option.textContent = year;
-                option.selected = year === currentYear;
-                budgetYearFilter.appendChild(option);
-            }
-
-            budgetMonthFilter.addEventListener('change', (e) => {
-                currentMonth = parseInt(e.target.value);
-                updateTransactionsTable();
-                updateBudgetSummary();
-            });
-
-            budgetYearFilter.addEventListener('change', (e) => {
-                currentYear = parseInt(e.target.value);
-                updateTransactionsTable();
-                updateBudgetSummary();
-            });
-        }
-
-        function initializeBudgetCategories() {
-            transactionType.addEventListener('change', (e) => {
-                const type = e.target.value;
-                transactionCategory.innerHTML = '<option value="">Select Category</option>';
-                
-                if (type && budgetCategories[type]) {
-                    budgetCategories[type].forEach(category => {
-                        const option = document.createElement('option');
-                        option.value = category;
-                        option.textContent = category;
-                        transactionCategory.appendChild(option);
-                    });
-                }
-            });
-        }
-
-        function updateBudgetSummary() {
-            const filteredTransactions = transactionsData.filter(transaction => {
-                const transactionDate = transaction.createdAt.toDate();
-                return transactionDate.getMonth() === currentMonth && 
-                       transactionDate.getFullYear() === currentYear;
-            });
-
-            let totalInflow = 0;
-            let totalOutflow = 0;
-            const inflowByCategory = {};
-            const outflowByCategory = {};
-
-            filteredTransactions.forEach(transaction => {
-                if (transaction.type === 'inflow') {
-                    totalInflow += transaction.amount;
-                    inflowByCategory[transaction.category] = (inflowByCategory[transaction.category] || 0) + transaction.amount;
-                } else {
-                    totalOutflow += transaction.amount;
-                    outflowByCategory[transaction.category] = (outflowByCategory[transaction.category] || 0) + transaction.amount;
-                }
-            });
-
-            const netBalance = totalInflow - totalOutflow;
-
-            totalInflowDisplay.textContent = `₹${totalInflow.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
-            totalOutflowDisplay.textContent = `₹${totalOutflow.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
-            netBalanceDisplay.textContent = `₹${netBalance.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
-            netBalanceDisplay.className = `text-3xl font-bold mt-2 ${netBalance >= 0 ? 'text-green-400' : 'text-red-400'}`;
-
-            updateCategoryBreakdown(inflowByCategory, outflowByCategory);
-        }
-
-        function updateCategoryBreakdown(inflowByCategory, outflowByCategory) {
-            inflowCategoriesDiv.innerHTML = '';
-            outflowCategoriesDiv.innerHTML = '';
-
-            budgetCategories.inflow.forEach(category => {
-                const amount = inflowByCategory[category] || 0;
-                const div = document.createElement('div');
-                div.className = 'flex justify-between items-center p-2 bg-gray-800 rounded';
-                div.innerHTML = `
-                    <span class="text-sm">${category}</span>
-                    <span class="text-sm font-bold text-green-400">₹${amount.toLocaleString('en-IN')}</span>
-                `;
-                inflowCategoriesDiv.appendChild(div);
-            });
-
-            budgetCategories.outflow.forEach(category => {
-                const amount = outflowByCategory[category] || 0;
-                const div = document.createElement('div');
-                div.className = 'flex justify-between items-center p-2 bg-gray-800 rounded';
-                div.innerHTML = `
-                    <span class="text-sm">${category}</span>
-                    <span class="text-sm font-bold text-red-400">₹${amount.toLocaleString('en-IN')}</span>
-                `;
-                outflowCategoriesDiv.appendChild(div);
-            });
-        }
-
-        function updateTransactionsTable() {
-            const filteredTransactions = transactionsData.filter(transaction => {
-                const transactionDate = transaction.createdAt.toDate();
-                return transactionDate.getMonth() === currentMonth && 
-                       transactionDate.getFullYear() === currentYear;
-            });
-
-            transactionsTable.innerHTML = '';
-            filteredTransactions.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
-            
-            filteredTransactions.forEach(transaction => {
-                const typeClass = transaction.type === 'inflow' ? 'text-green-400' : 'text-red-400';
-                const amountPrefix = transaction.type === 'inflow' ? '+' : '-';
-                const row = `
-                    <tr>
-                        <td class="px-4 py-2 whitespace-nowrap">${transaction.createdAt.toDate().toLocaleDateString()}</td>
-                        <td class="px-4 py-2 whitespace-nowrap ${typeClass}">${transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)}</td>
-                        <td class="px-4 py-2 whitespace-nowrap">${transaction.category}</td>
-                        <td class="px-4 py-2 whitespace-nowrap ${typeClass}">${amountPrefix}₹${transaction.amount.toLocaleString('en-IN')}</td>
-                        <td class="px-4 py-2 whitespace-nowrap">${transaction.description || '-'}</td>
-                        <td class="px-4 py-2 whitespace-nowrap">
-                            <button data-id="${transaction.id}" class="delete-transaction-btn text-red-500 hover:text-red-700">Delete</button>
-                        </td>
-                    </tr>
-                `;
-                transactionsTable.innerHTML += row;
-            });
-
-            document.querySelectorAll('.delete-transaction-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    const id = e.target.dataset.id;
-                    showModal('Are you sure you want to delete this transaction?', async () => {
-                        await deleteDoc(doc(db, `/artifacts/${appId}/users/${userId}/transactions`, id));
-                    });
-                });
-            });
-        }
-
-        // Add Transaction Form Handler
-        addTransactionForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const type = document.getElementById('transaction-type').value;
-            const category = document.getElementById('transaction-category').value;
-            const amount = parseFloat(document.getElementById('transaction-amount').value);
-            const description = document.getElementById('transaction-description').value;
-            
-            if (type && category && amount > 0) {
-                const transactionsColRef = collection(db, `/artifacts/${appId}/users/${userId}/transactions`);
-                await addDoc(transactionsColRef, {
-                    type,
-                    category,
-                    amount,
-                    description: description || '',
-                    createdAt: serverTimestamp()
-                });
-                addTransactionForm.reset();
-            } else {
-                alert('Please fill all required fields with valid values');
-            }
-        });
-        
-        // Zerodha API Fetcher
-        fetchZerodhaBtn.addEventListener('click', async () => {
-            loadingOverlay.classList.remove('hidden');
+        // Zerodha API fetcher
+        document.getElementById('fetch-zerodha-btn')?.addEventListener('click', async () => {
+            showLoading(true);
             try {
-                // IMPORTANT: Replace this with your deployed Python backend URL.
-                const backendUrl = 'YOUR_RENDER_BACKEND_URL_HERE';
-                const response = await fetch(backendUrl);
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    const batch = writeBatch(db);
-                    const stocksColRef = collection(db, `/artifacts/${appId}/users/${userId}/stocks`);
-                    
-                    const existingStocksSnapshot = await getDocs(query(stocksColRef, where("source", "==", "Zerodha")));
-                    existingStocksSnapshot.forEach(doc => batch.delete(doc.ref));
-
-                    result.data.forEach(stock => {
-                        batch.set(doc(stocksColRef), {
-                            ...stock,
-                            createdAt: serverTimestamp()
-                        });
-                    });
-                    
-                    await batch.commit();
+                const res = await fetch('http://localhost:5000/api/portfolio');
+                const data = await res.json();
+                if (data.status === 'success') {
+                    stocksView.innerHTML = `<pre>${JSON.stringify(data.data, null, 2)}</pre>`;
+                    switchTab('stocks');
                 } else {
-                    console.error("API Error:", result.message);
+                    alert('Error: ' + data.message);
                 }
             } catch (e) {
-                console.error("Error fetching Zerodha data:", e);
-            } finally {
-                loadingOverlay.classList.add('hidden');
+                alert('Failed to fetch Zerodha data: ' + e.message);
             }
+            showLoading(false);
         });
 
-        // AI Agent Functionality
-        aiAgentBtn.addEventListener('click', async () => {
-            aiAlertsContainer.classList.remove('hidden');
-            aiAlertsText.textContent = 'Generating insights...';
-
-            const payload = {
-                contents: [
-                    {
-                        parts: [
-                            {
-                                text: `Act as a senior financial advisor with 30+ years of experience. I am an individual user trying to track my personal finances. My current financial summary is: Net Worth: ₹${totalStocks + totalCredits - totalDebts}. Total Stocks: ₹${totalStocks}. Total Credits: ₹${totalCredits}. Total Debts: ₹${totalDebts}. Based on this data, provide 2-3 concise, actionable financial alerts or insights. Be encouraging and informative.`
-                            }
-                        ]
-                    }
-                ],
-                tools: [{"google_search": {}}],
-            };
-            
-            const apiKey = ""
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`API call failed with status: ${response.status}`);
-                }
-
-                const result = await response.json();
-                const generatedText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-                if (generatedText) {
-                    aiAlertsText.textContent = generatedText;
-                } else {
-                    aiAlertsText.textContent = "Error: Unable to generate insights.";
-                }
-
-            } catch (e) {
-                console.error("Error with AI Agent:", e);
-                aiAlertsText.textContent = "Error: Could not connect to AI agent.";
-            }
+        // AI Agent button (placeholder)
+        document.getElementById('ai-agent-btn')?.addEventListener('click', async () => {
+            alert('AI Agent feature coming soon!');
         });
 
     </script>
