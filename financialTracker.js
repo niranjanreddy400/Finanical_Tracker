@@ -321,11 +321,38 @@ function createMainUI() {
                 </div>
             </div>
         </div>
+        <div id="initial-login" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50">
+            <div class="bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-sm text-center">
+                <h2 class="text-3xl font-bold mb-4 text-indigo-500">Welcome to My Financial Dashboard</h2>
+                <p class="text-gray-400 mb-6">Track your finances, manage budgets, and analyze investments.</p>
+                <button id="start-login-btn" class="btn-primary py-3 px-6">Get Started</button>
+            </div>
+        </div>
     `;
 }
 
 // Call this at the top of your script to build the UI
 createMainUI();
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Initial login page logic
+    const initialLogin = document.getElementById('initial-login');
+    const startLoginBtn = document.getElementById('start-login-btn');
+    if (initialLogin && startLoginBtn) {
+        startLoginBtn.addEventListener('click', () => {
+            initialLogin.style.display = 'none';
+            loginContainer.classList.remove('hidden');
+        });
+        // Hide main dashboard and login until Get Started is clicked
+        loginContainer.classList.add('hidden');
+        appContainer.classList.add('hidden');
+    }
+    // Initial table renders (now safe)
+    updateCreditsTable();
+    updateDebtsTable();
+    updateTransactionsTable();
+    updateStocksTable();
+});
 
 // Event handler functions for HTML onclick attributes
 window.onLoginClick = async function() {
